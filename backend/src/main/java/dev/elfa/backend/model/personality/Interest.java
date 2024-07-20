@@ -1,0 +1,31 @@
+package dev.elfa.backend.model.personality;
+
+public enum Interest {
+    ART,
+    BUSINESS,
+    CULTURE,
+    EDUCATION,
+    ENTERTAINMENT,
+    ENVIRONMENT,
+    FASHION,
+    FINANCE,
+    FOOD,
+    HEALTH,
+    HISTORY,
+    HOBBIES,
+    HOLIDAYS,
+    HOME,
+    HUMOR,
+    LITERATURE,
+    MOVIES,
+    MUSIC,
+    NEWS,
+    POLITICS,
+    RELIGION,
+    SCIENCE,
+    SPORTS,
+    TECHNOLOGY,
+    TRAVEL,
+    TV,
+    VEHICLES
+}
