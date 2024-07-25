@@ -38,7 +38,7 @@ public class InfluencerService {
         return new InfluencerResponseDto(influencer.getId(), twitterDto);
     }
 
-    public Optional<Influencer> getInfluencer(String id) {
+    private Optional<Influencer> getInfluencer(String id) {
         return influencerRepo.findById(id);
     }
 
