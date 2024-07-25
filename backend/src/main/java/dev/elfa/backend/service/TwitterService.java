@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 public class TwitterService {
-    private final static String URL = "https://api.twitter.com/2/";
+    private static final String URL = "https://api.twitter.com/2/";
     private final RestClient restClient;
     private final String redirectUri;
     private final String clientId;
