@@ -5,7 +5,7 @@ import dev.elfa.backend.dto.auth.TwitterAccountData;
 import dev.elfa.backend.dto.auth.TwitterAccountResponse;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
-import dev.elfa.backend.model.auth.OAuth2;
+import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.repository.InfluencerRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +41,7 @@ public class TwitterService {
         this.influencerRepo = influencerRepo;
     }
 
-    public OAuth2 getOAuth2Token(String code) {
+    public Auth getAuthToken(String code) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientId, password);
 
@@ -62,10 +62,10 @@ public class TwitterService {
 
         if (!response.getStatusCode().isError() && response.getBody() != null) {
             AuthenticationResponse entityBody = response.getBody();
-            return new OAuth2(true, entityBody.access_token(), entityBody.refresh_token());
+            return new Auth(true, entityBody.access_token(), entityBody.refresh_token());
         }
 
-        return new OAuth2(false, null, null);
+        return new Auth(false, null, null);
     }
 
     public Optional<TwitterAccountData> getUserData(String token) {
@@ -78,8 +78,8 @@ public class TwitterService {
         return Optional.ofNullable(response).map(TwitterAccountResponse::data);
     }
 
-    public void saveAccount(TwitterAccountData account, OAuth2 oAuth2) {
-        Twitter twitter = new Twitter(account.id(), account.name(), account.username(), oAuth2);
+    public void saveAccount(TwitterAccountData account, Auth auth) {
+        Twitter twitter = new Twitter(account.id(), account.name(), account.username(), auth);
         Influencer influencer = new Influencer(twitter);
         influencerRepo.save(influencer);
     }

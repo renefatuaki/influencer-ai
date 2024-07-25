@@ -2,7 +2,8 @@ package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.auth.AuthorizationRequestBody;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
-import dev.elfa.backend.model.auth.OAuth2;
+import dev.elfa.backend.model.auth.Auth;
+import dev.elfa.backend.service.InfluencerService;
 import dev.elfa.backend.service.TwitterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,22 +17,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TwitterController {
     private final TwitterService twitterService;
+    private final InfluencerService influencerService;
 
     @PostMapping
     public ResponseEntity<String> addTwitter(@RequestBody AuthorizationRequestBody authorizationRequestBody) {
-        OAuth2 oAuth2 = twitterService.getOAuth2Token(authorizationRequestBody.code());
+        Auth auth = twitterService.getAuthToken(authorizationRequestBody.code());
 
-        if (!oAuth2.isAuthorized()) return ResponseEntity
+        if (!auth.isAuthorized()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body("Account couldn't be authenticated. Restart the authorization process.");
 
-        Optional<TwitterAccountData> twitterAccountData = twitterService.getUserData(oAuth2.accessToken());
+        Optional<TwitterAccountData> twitterAccountData = twitterService.getUserData(auth.accessToken());
 
         if (twitterAccountData.isEmpty()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body("Account couldn't be retrieved. Restart the authorization process.");
 
-        twitterService.saveAccount(twitterAccountData.get(), oAuth2);
+        twitterService.saveAccount(twitterAccountData.get(), auth);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
