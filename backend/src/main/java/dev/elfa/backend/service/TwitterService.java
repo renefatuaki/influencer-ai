@@ -95,10 +95,11 @@ public class TwitterService {
             AuthenticationResponse entityBody = response.getBody();
             auth.setAccessToken(entityBody.access_token());
             auth.setRefreshToken(entityBody.refresh_token());
+            auth.setExpiresAt(LocalDateTime.now().plusSeconds(entityBody.expires_in()));
         }
     }
 
-    public Optional<TwitterAccountData> getUserData(String token) {
+    public Optional<TwitterAccountData> getAccountData(String token) {
         TwitterAccountResponse response = restClient.get()
                 .uri("/users/me")
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
@@ -119,7 +120,7 @@ public class TwitterService {
 
         if (isTokenExpired(auth)) refreshAuthToken(auth);
 
-        Optional<TwitterAccountData> accountData = this.getUserData(auth.getAccessToken());
+        Optional<TwitterAccountData> accountData = this.getAccountData(auth.getAccessToken());
 
         accountData.ifPresent(account -> {
             Twitter updatedTwitter = new Twitter(account.id(), account.name(), account.username(), auth);

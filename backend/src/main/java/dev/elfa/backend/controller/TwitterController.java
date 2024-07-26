@@ -28,7 +28,7 @@ public class TwitterController {
                 .status(HttpStatus.CONFLICT)
                 .body("Account couldn't be authenticated. Restart the authorization process.");
 
-        Optional<TwitterAccountData> twitterAccountData = twitterService.getUserData(auth.getAccessToken());
+        Optional<TwitterAccountData> twitterAccountData = twitterService.getAccountData(auth.getAccessToken());
 
         if (twitterAccountData.isEmpty()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
