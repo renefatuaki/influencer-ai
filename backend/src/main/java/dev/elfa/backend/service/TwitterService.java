@@ -16,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -62,10 +63,39 @@ public class TwitterService {
 
         if (!response.getStatusCode().isError() && response.getBody() != null) {
             AuthenticationResponse entityBody = response.getBody();
-            return new Auth(true, entityBody.access_token(), entityBody.refresh_token());
+            LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(entityBody.expires_in());
+            return new Auth(true, entityBody.access_token(), entityBody.refresh_token(), expiresAt);
         }
 
-        return new Auth(false, null, null);
+        return new Auth(false, null, null, null);
+    }
+
+    private boolean isTokenExpired(Auth auth) {
+        return auth.getExpiresAt().isBefore(LocalDateTime.now());
+    }
+
+    private void refreshAuthToken(Auth auth) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBasicAuth(clientId, password);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "refresh_token");
+        requestBody.add("refresh_token", auth.getRefreshToken());
+        requestBody.add("client_id", clientId);
+
+        ResponseEntity<AuthenticationResponse> response = restClient.post()
+                .uri("/oauth2/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(requestBody)
+                .retrieve()
+                .toEntity(AuthenticationResponse.class);
+
+        if (!response.getStatusCode().isError() && response.getBody() != null) {
+            AuthenticationResponse entityBody = response.getBody();
+            auth.setAccessToken(entityBody.access_token());
+            auth.setRefreshToken(entityBody.refresh_token());
+        }
     }
 
     public Optional<TwitterAccountData> getUserData(String token) {
@@ -82,5 +112,19 @@ public class TwitterService {
         Twitter twitter = new Twitter(account.id(), account.name(), account.username(), auth);
         Influencer influencer = new Influencer(twitter);
         influencerRepo.save(influencer);
+    }
+
+    public void updateAccount(Influencer influencer) {
+        Auth auth = influencer.getTwitter().auth();
+
+        if (isTokenExpired(auth)) refreshAuthToken(auth);
+
+        Optional<TwitterAccountData> accountData = this.getUserData(auth.getAccessToken());
+
+        accountData.ifPresent(account -> {
+            Twitter updatedTwitter = new Twitter(account.id(), account.name(), account.username(), auth);
+            Influencer updatedInfluencer = new Influencer(influencer.getId(), updatedTwitter, influencer.getPersonality(), influencer.getAppearance());
+            influencerRepo.save(updatedInfluencer);
+        });
     }
 }

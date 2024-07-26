@@ -2,6 +2,7 @@ package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.auth.AuthorizationRequestBody;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
+import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.service.InfluencerService;
 import dev.elfa.backend.service.TwitterService;
@@ -27,7 +28,7 @@ public class TwitterController {
                 .status(HttpStatus.CONFLICT)
                 .body("Account couldn't be authenticated. Restart the authorization process.");
 
-        Optional<TwitterAccountData> twitterAccountData = twitterService.getUserData(auth.accessToken());
+        Optional<TwitterAccountData> twitterAccountData = twitterService.getUserData(auth.getAccessToken());
 
         if (twitterAccountData.isEmpty()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -36,5 +37,16 @@ public class TwitterController {
         twitterService.saveAccount(twitterAccountData.get(), auth);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateTwitter(@PathVariable String id) {
+        Optional<Influencer> influencer = influencerService.getInfluencer(id);
+
+        if (influencer.isEmpty()) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        twitterService.updateAccount(influencer.get());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 }
