@@ -32,8 +32,8 @@ public class InfluencerController {
     public ResponseEntity<Page<InfluencerResponseDto>> getInfluencers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "DESC") Sort.Direction direction
+            @RequestParam(defaultValue = "DESC") Sort.Direction direction,
+            @RequestParam(defaultValue = "id") String sortBy
     ) {
         Pageable pageable = PageRequest.of(page, size, direction, sortBy);
         Page<InfluencerResponseDto> influencers = influencerService.getInfluencers(pageable);
