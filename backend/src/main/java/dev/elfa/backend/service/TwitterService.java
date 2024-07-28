@@ -21,30 +21,29 @@ import java.util.Optional;
 
 @Service
 public class TwitterService {
-    private static final String URL = "https://api.twitter.com/2/";
     private final RestClient restClient;
     private final String redirectUri;
     private final String clientId;
-    private final String password;
+    private final String clientPassword;
     private final InfluencerRepo influencerRepo;
 
-
     public TwitterService(
+            @Value("${X_URL}") String baseUrl,
             @Value("${X_CLIENT_ID}") String clientId,
+            @Value("${X_CLIENT_PW}") String clientPassword,
             @Value("${X_REDIRECT_URI}") String redirectUri,
-            @Value("${X_CLIENT_PW}") String password,
             InfluencerRepo influencerRepo
     ) {
-        this.restClient = RestClient.builder().baseUrl(URL).build();
+        this.restClient = RestClient.builder().baseUrl(baseUrl).build();
         this.clientId = clientId;
+        this.clientPassword = clientPassword;
         this.redirectUri = redirectUri;
-        this.password = password;
         this.influencerRepo = influencerRepo;
     }
 
     public Auth getAuthToken(String code) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(clientId, password);
+        headers.setBasicAuth(clientId, clientPassword);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("code", code);
@@ -76,7 +75,7 @@ public class TwitterService {
 
     private void refreshAuthToken(Auth auth) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(clientId, password);
+        headers.setBasicAuth(clientId, clientPassword);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "refresh_token");
@@ -115,17 +114,17 @@ public class TwitterService {
         influencerRepo.save(influencer);
     }
 
-    public void updateAccount(Influencer influencer) {
+    public Optional<Influencer> updateAccount(Influencer influencer) {
         Auth auth = influencer.getTwitter().auth();
 
         if (isTokenExpired(auth)) refreshAuthToken(auth);
 
-        Optional<TwitterAccountData> accountData = this.getAccountData(auth.getAccessToken());
-
-        accountData.ifPresent(account -> {
-            Twitter updatedTwitter = new Twitter(account.id(), account.name(), account.username(), auth);
+        return this.getAccountData(auth.getAccessToken()).map(accountData -> {
+            Twitter updatedTwitter = new Twitter(accountData.id(), accountData.name(), accountData.username(), auth);
             Influencer updatedInfluencer = new Influencer(influencer.getId(), updatedTwitter, influencer.getPersonality(), influencer.getAppearance());
             influencerRepo.save(updatedInfluencer);
+
+            return updatedInfluencer;
         });
     }
 }
