@@ -26,12 +26,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 class TwitterServiceTest {
+
     @Autowired
     private TwitterService twitterService;
-    private static MockWebServer mockWebServer;
 
     @MockBean
     private InfluencerRepo mockInfluencerRepo;
+
+    private static MockWebServer mockWebServer;
 
     @BeforeAll
     static void setup() throws IOException {
@@ -54,8 +56,7 @@ class TwitterServiceTest {
     }
 
     @Test
-    void getAuthToken_WithValidCode_ReturnsAuthToken() {
-        // mocking data
+    void getAuthToken_ValidCode_ReturnsAuthToken() {
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
                 .setBody("""
@@ -69,10 +70,8 @@ class TwitterServiceTest {
                         """)
         );
 
-        // service
         Auth auth = twitterService.getAuthToken("mockCode");
 
-        // expected result
         assertTrue(auth.isAuthorized());
         assertEquals("mockAccessToken", auth.getAccessToken());
         assertEquals("mockRefreshToken", auth.getRefreshToken());
@@ -81,8 +80,7 @@ class TwitterServiceTest {
     }
 
     @Test
-    void getAccountData_WithValidToken_ReturnsAccountData() {
-        // mocking data
+    void getAccountData_ValidToken_ReturnsAccountData() {
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
                 .setBody("""
@@ -96,10 +94,8 @@ class TwitterServiceTest {
                         """)
         );
 
-        // service
         Optional<TwitterAccountData> accountData = twitterService.getAccountData("mockAccessToken");
 
-        // expected result
         assertTrue(accountData.isPresent());
         assertEquals("1000", accountData.get().id());
         assertEquals("name", accountData.get().name());
@@ -107,8 +103,7 @@ class TwitterServiceTest {
     }
 
     @Test
-    void updateAccount_WithValidData_UpdatesAccount() {
-        // mocking data
+    void updateAccount_ValidData_UpdatesAccount() {
         Twitter twitter = new Twitter("1000", "oldName", "oldUsername", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().minusHours(1)));
         Influencer influencer = new Influencer(twitter);
 
@@ -138,10 +133,9 @@ class TwitterServiceTest {
                         """)
         );
 
-        // service
         Optional<Influencer> influencerOptional = twitterService.updateAccount(influencer);
 
-        // expected result
+        assertTrue(influencerOptional.isPresent());
         assertEquals("newName", influencerOptional.get().getTwitter().name());
         assertEquals("newUsername", influencerOptional.get().getTwitter().username());
     }

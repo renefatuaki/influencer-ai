@@ -7,13 +7,17 @@ import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.repository.InfluencerRepo;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class InfluencerServiceTest {
@@ -21,22 +25,18 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencerDto_ValidId_ReturnsInfluencerResponseDto() {
-        // mocking data
         LocalDateTime currentDateTime = LocalDateTime.now();
         Auth auth = new Auth(true, "token", "secret", currentDateTime);
         Twitter twitter = new Twitter("1", "name", "username", auth);
         Influencer influencer = new Influencer("1", twitter, null, null);
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.of(influencer));
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // expected result
         AuthDto authDto = new AuthDto(true);
         TwitterDto twitterDto = new TwitterDto("1", "name", "username", authDto);
         InfluencerResponseDto influencerResponseDto = new InfluencerResponseDto("1", twitterDto);
 
-        // run test
         Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
         assertEquals(actualResponseDto, Optional.of(influencerResponseDto));
@@ -44,13 +44,10 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencerDto_IdNotFound_ReturnsEmpty() {
-        // mocking data
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.empty());
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
         assertTrue(actualResponseDto.isEmpty());
@@ -58,13 +55,10 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencerDto_EmptyId_ReturnsEmpty() {
-        // mocking data
         when(mockInfluencerRepo.findById("")).thenReturn(Optional.empty());
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("");
         verify(mockInfluencerRepo, times(1)).findById("");
         assertEquals(actualResponseDto, Optional.empty());
@@ -72,9 +66,22 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencers_ValidPageable_ReturnsInfluencerResponseDtoPage() {
-        // mocking data
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
 
+        Page<Influencer> influencerPage = getInfluencersPageData();
+
+        when(mockInfluencerRepo.findAll(pageable)).thenReturn(influencerPage);
+
+        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
+
+        Page<InfluencerResponseDto> influencerResponseDtoPage = getInfluencersDtoPageData();
+
+        Page<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencers(pageable);
+        verify(mockInfluencerRepo, times(1)).findAll(pageable);
+        assertEquals(actualResponseDto, influencerResponseDtoPage);
+    }
+
+    private static @NotNull Page<Influencer> getInfluencersPageData() {
         Auth auth1 = new Auth(true, "token", "secret", LocalDateTime.now());
         Twitter twitter1 = new Twitter("1", "name", "username", auth1);
         Influencer influencer1 = new Influencer("1", twitter1, null, null);
@@ -83,15 +90,11 @@ class InfluencerServiceTest {
         Twitter twitter2 = new Twitter("1", "name", "username", auth2);
         Influencer influencer2 = new Influencer("1", twitter2, null, null);
 
-        List<Influencer> influencerList = Arrays.asList(influencer1, influencer2);
-        Page<Influencer> influencerPage = new PageImpl<>(influencerList);
+        return new PageImpl<>(Arrays.asList(influencer1, influencer2));
+    }
 
-        when(mockInfluencerRepo.findAll(pageable)).thenReturn(influencerPage);
 
-        // service
-        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
-
-        // expected result
+    private static @NotNull Page<InfluencerResponseDto> getInfluencersDtoPageData() {
         AuthDto authDto1 = new AuthDto(true);
         TwitterDto twitterDto1 = new TwitterDto("1", "name", "username", authDto1);
         InfluencerResponseDto influencerResponseDto1 = new InfluencerResponseDto("1", twitterDto1);
@@ -100,25 +103,17 @@ class InfluencerServiceTest {
         TwitterDto twitterDto2 = new TwitterDto("1", "name", "username", authDto2);
         InfluencerResponseDto influencerResponseDto2 = new InfluencerResponseDto("1", twitterDto2);
 
-        Page<InfluencerResponseDto> influencerResponseDtoPage = new PageImpl<>(Arrays.asList(influencerResponseDto1, influencerResponseDto2));
-
-        // run test
-        Page<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencers(pageable);
-        verify(mockInfluencerRepo, times(1)).findAll(pageable);
-        assertEquals(actualResponseDto, influencerResponseDtoPage);
+        return new PageImpl<>(Arrays.asList(influencerResponseDto1, influencerResponseDto2));
     }
 
     @Test
     void getInfluencers_EmptyList_ReturnsEmptyPage() {
-        // mocking data
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
 
         when(mockInfluencerRepo.findAll(pageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         Page<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencers(pageable);
         verify(mockInfluencerRepo, times(1)).findAll(pageable);
         assertEquals(actualResponseDto, new PageImpl<>(Collections.emptyList()));
@@ -126,17 +121,14 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencer_ValidId_ReturnsInfluencer() {
-        // mocking data
         LocalDateTime currentDateTime = LocalDateTime.now();
         Auth auth = new Auth(true, "token", "secret", currentDateTime);
         Twitter twitter = new Twitter("1", "name", "username", auth);
         Influencer influencer = new Influencer("1", twitter, null, null);
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.of(influencer));
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         Optional<Influencer> actualInfluencer = influencerService.getInfluencer("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
         assertEquals(actualInfluencer, Optional.of(influencer));
@@ -144,14 +136,10 @@ class InfluencerServiceTest {
 
     @Test
     void getInfluencer_IdNotFound_ReturnsEmpty() {
-        // mocking data
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.empty());
-
-        // service
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         Optional<Influencer> actualInfluencer = influencerService.getInfluencer("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
         assertEquals(actualInfluencer, Optional.empty());
@@ -159,13 +147,10 @@ class InfluencerServiceTest {
 
     @Test
     void deleteInfluencer_ValidId_DeletesInfluencer() {
-        // mocking data
         doNothing().when(mockInfluencerRepo).deleteById("1");
 
-        // service
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        // run test
         boolean isDeleted = influencerService.deleteInfluencer("1");
         verify(mockInfluencerRepo, times(1)).deleteById("1");
         assertTrue(isDeleted);
