@@ -6,6 +6,9 @@ import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.auth.Auth;
+import dev.elfa.backend.model.personality.Interest;
+import dev.elfa.backend.model.personality.Personality;
+import dev.elfa.backend.model.personality.Tone;
 import dev.elfa.backend.repository.InfluencerRepo;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -154,5 +158,34 @@ class InfluencerServiceTest {
         boolean isDeleted = influencerService.deleteInfluencer("1");
         verify(mockInfluencerRepo, times(1)).deleteById("1");
         assertTrue(isDeleted);
+    }
+
+    @Test
+    void updatePersonality_ValidRequest_ReturnsAcceptedStatus() {
+        Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
+        Twitter twitter = new Twitter("2020", "name", "username", auth);
+        Personality personalityToUpdate = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART));
+        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null));
+
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(influencerOptional);
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
+
+        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
+
+        Optional<Personality> result = influencerService.updatePersonality("1", personalityToUpdate);
+
+        assertTrue(result.isPresent());
+        assertEquals(personalityToUpdate, result.get());
+    }
+
+    @Test
+    void updatePersonality_InvalidId_ReturnsConflictStatus() {
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
+
+        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
+
+        Optional<Personality> result = influencerService.updatePersonality("1", new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART)));
+
+        assertTrue(result.isEmpty());
     }
 }
