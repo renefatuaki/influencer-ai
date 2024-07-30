@@ -40,7 +40,7 @@ class InfluencerServiceTest {
 
         AuthDto authDto = new AuthDto(true);
         TwitterDto twitterDto = new TwitterDto("1", "name", "username", authDto);
-        InfluencerResponseDto influencerResponseDto = new InfluencerResponseDto("1", twitterDto);
+        InfluencerResponseDto influencerResponseDto = new InfluencerResponseDto("1", twitterDto, null, null);
 
         Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
@@ -102,11 +102,11 @@ class InfluencerServiceTest {
     private static @NotNull Page<InfluencerResponseDto> getInfluencersDtoPageData() {
         AuthDto authDto1 = new AuthDto(true);
         TwitterDto twitterDto1 = new TwitterDto("1", "name", "username", authDto1);
-        InfluencerResponseDto influencerResponseDto1 = new InfluencerResponseDto("1", twitterDto1);
+        InfluencerResponseDto influencerResponseDto1 = new InfluencerResponseDto("1", twitterDto1, null, null);
 
         AuthDto authDto2 = new AuthDto(true);
         TwitterDto twitterDto2 = new TwitterDto("1", "name", "username", authDto2);
-        InfluencerResponseDto influencerResponseDto2 = new InfluencerResponseDto("1", twitterDto2);
+        InfluencerResponseDto influencerResponseDto2 = new InfluencerResponseDto("1", twitterDto2, null, null);
 
         return new PageImpl<>(Arrays.asList(influencerResponseDto1, influencerResponseDto2));
     }

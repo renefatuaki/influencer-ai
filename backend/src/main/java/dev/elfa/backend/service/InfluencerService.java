@@ -37,7 +37,7 @@ public class InfluencerService {
         AuthDto authDto = new AuthDto(twitter.auth().isAuthorized());
         TwitterDto twitterDto = new TwitterDto(twitter.id(), twitter.name(), twitter.username(), authDto);
 
-        return new InfluencerResponseDto(influencer.getId(), twitterDto);
+        return new InfluencerResponseDto(influencer.getId(), twitterDto, influencer.getPersonality(), influencer.getAppearance());
     }
 
     public Optional<Influencer> getInfluencer(String id) {
