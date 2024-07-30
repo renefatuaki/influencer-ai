@@ -1,6 +1,7 @@
 package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.InfluencerResponseDto;
+import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.service.InfluencerService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,15 @@ public class InfluencerController {
 
         return updatedPersonality
                 .map(personality -> ResponseEntity.status(HttpStatus.ACCEPTED).body(personality))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
+                .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @PatchMapping("/{id}/appearance")
+    public ResponseEntity<Appearance> updateInfluencerAppearance(@PathVariable String id, @RequestBody Appearance appearanceRequestBody) {
+        Optional<Appearance> updatedAppearance = influencerService.updateAppearance(id, appearanceRequestBody);
+
+        return updatedAppearance
+                .map(appearance -> ResponseEntity.status(HttpStatus.ACCEPTED).body(appearance))
+                .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 }

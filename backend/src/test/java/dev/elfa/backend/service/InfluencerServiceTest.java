@@ -5,6 +5,7 @@ import dev.elfa.backend.dto.InfluencerResponseDto;
 import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.appearance.*;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.personality.Interest;
 import dev.elfa.backend.model.personality.Personality;
@@ -185,6 +186,59 @@ class InfluencerServiceTest {
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
         Optional<Personality> result = influencerService.updatePersonality("1", new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART)));
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void updateAppearance_ValidRequest_ReturnsAcceptedStatus() {
+        Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
+        Twitter twitter = new Twitter("2020", "name", "username", auth);
+        Appearance appearanceToUpdate = new Appearance(
+                BodyBuild.ATHLETIC,
+                EyeColor.GREEN,
+                EyeShape.ALMOND,
+                Set.of(FaceFeatures.BEARD, FaceFeatures.MOLE),
+                FaceShape.OVAL,
+                HairColor.BLACK,
+                HairLength.MEDIUM,
+                Height.AVERAGE,
+                SkinTone.LIGHT,
+                Style.BUSINESS
+        );
+        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null));
+
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(influencerOptional);
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
+
+        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
+
+        Optional<Appearance> result = influencerService.updateAppearance("1", appearanceToUpdate);
+
+        assertTrue(result.isPresent());
+        assertEquals(appearanceToUpdate, result.get());
+    }
+
+    @Test
+    void updateAppearance_InvalidId_ReturnsConflictStatus() {
+        Appearance appearanceToUpdate = new Appearance(
+                BodyBuild.ATHLETIC,
+                EyeColor.GREEN,
+                EyeShape.ALMOND,
+                Set.of(FaceFeatures.BEARD, FaceFeatures.MOLE),
+                FaceShape.OVAL,
+                HairColor.BLACK,
+                HairLength.MEDIUM,
+                Height.AVERAGE,
+                SkinTone.LIGHT,
+                Style.BUSINESS
+        );
+
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
+
+        InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
+
+        Optional<Appearance> result = influencerService.updateAppearance("1", appearanceToUpdate);
 
         assertTrue(result.isEmpty());
     }

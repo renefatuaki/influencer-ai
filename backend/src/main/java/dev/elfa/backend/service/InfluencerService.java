@@ -5,6 +5,7 @@ import dev.elfa.backend.dto.InfluencerResponseDto;
 import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,15 @@ public class InfluencerService {
             influencerRepo.save(influencer);
 
             return influencer.getPersonality();
+        });
+    }
+
+    public Optional<Appearance> updateAppearance(String id, Appearance appearance) {
+        return influencerRepo.findById(id).map(influencer -> {
+            influencer.setAppearance(appearance);
+            influencerRepo.save(influencer);
+
+            return influencer.getAppearance();
         });
     }
 }

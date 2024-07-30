@@ -229,4 +229,72 @@ class InfluencerControllerTest {
         verify(mockInfluencerRepo, times(1)).findById(anyString());
     }
 
+    @Test
+    void updateInfluencerAppearance_ValidRequest_ReturnsAcceptedStatus() throws Exception {
+        Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
+        Twitter twitter = new Twitter("2020", "name", "username", auth);
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null)));
+
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
+
+        mvc.perform(MockMvcRequestBuilders.patch("/api/influencer/1/appearance")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "bodyBuild": "ATHLETIC",
+                                  "eyeColor": "GREEN",
+                                  "eyeShape": "ALMOND",
+                                  "faceFeatures": [ "BEARD", "MOLE" ],
+                                  "faceShape": "OVAL",
+                                  "hairColor": "BLACK",
+                                  "hairLength": "MEDIUM",
+                                  "height": "AVERAGE",
+                                  "skinTone": "LIGHT",
+                                  "style": "BUSINESS"
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                        {
+                          "bodyBuild": "ATHLETIC",
+                          "eyeColor": "GREEN",
+                          "eyeShape": "ALMOND",
+                          "faceFeatures": [ "BEARD", "MOLE" ],
+                          "faceShape": "OVAL",
+                          "hairColor": "BLACK",
+                          "hairLength": "MEDIUM",
+                          "height": "AVERAGE",
+                          "skinTone": "LIGHT",
+                          "style": "BUSINESS"
+                        }
+                        """));
+
+        verify(mockInfluencerRepo, times(1)).findById(anyString());
+        verify(mockInfluencerRepo, times(1)).save(any(Influencer.class));
+    }
+
+    @Test
+    void updateInfluencerAppearance_InvalidId_ReturnsConflictStatus() throws Exception {
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
+
+        mvc.perform(MockMvcRequestBuilders.patch("/api/influencer/1/appearance")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "bodyBuild": "ATHLETIC",
+                                  "eyeColor": "GREEN",
+                                  "eyeShape": "ALMOND",
+                                  "faceFeatures": [ "BEARD", "MOLE" ],
+                                  "faceShape": "OVAL",
+                                  "hairColor": "BLACK",
+                                  "hairLength": "MEDIUM",
+                                  "height": "AVERAGE",
+                                  "skinTone": "LIGHT",
+                                  "style": "BUSINESS"
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+
+        verify(mockInfluencerRepo, times(1)).findById(anyString());
+    }
 }
