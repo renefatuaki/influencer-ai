@@ -5,8 +5,8 @@ export default function Management() {
   const authorizationUrl = getAuthorizationUrl();
 
   return (
-    <main>
+    <>
       <AddAccount url={authorizationUrl}></AddAccount>
-    </main>
+    </>
   );
 }
