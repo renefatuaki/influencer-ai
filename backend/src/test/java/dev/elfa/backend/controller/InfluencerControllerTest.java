@@ -61,7 +61,7 @@ class InfluencerControllerTest {
     }
 
     @Test
-    void getInfluencer_ValidId_OkStatus() throws Exception {
+    void getInfluencer_ValidId_ReturnsOkStatus() throws Exception {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1010", twitter, null, null)));
@@ -84,7 +84,7 @@ class InfluencerControllerTest {
     }
 
     @Test
-    void getInfluencer_InvalidId_NotFoundStatus() throws Exception {
+    void getInfluencer_InvalidId_ReturnsNotFoundStatus() throws Exception {
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
 
         mvc.perform(MockMvcRequestBuilders.get("/api/influencer/1000"))
@@ -92,7 +92,7 @@ class InfluencerControllerTest {
     }
 
     @Test
-    void getInfluencers_ValidRequest_OkStatus() throws Exception {
+    void getInfluencers_ValidRequest_ReturnsOkStatus() throws Exception {
         Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
 
         Auth auth1 = new Auth(true, "token", "secret", LocalDateTime.now());
@@ -166,7 +166,7 @@ class InfluencerControllerTest {
     }
 
     @Test
-    void deleteInfluencer_ValidId_NoContentStatus() throws Exception {
+    void deleteInfluencer_ValidId_ReturnsNoContentStatus() throws Exception {
         doNothing().when(mockInfluencerRepo).deleteById("1");
 
         mvc.perform(MockMvcRequestBuilders.delete("/api/influencer/1"))
@@ -176,7 +176,7 @@ class InfluencerControllerTest {
     }
 
     @Test
-    void deleteInfluencer_InvalidId_NotFoundStatus() throws Exception {
+    void deleteInfluencer_InvalidId_ReturnsNotFoundStatus() throws Exception {
         doThrow(new IllegalArgumentException()).when(mockInfluencerRepo).deleteById("1");
 
         mvc.perform(MockMvcRequestBuilders.delete("/api/influencer/1"))
