@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -182,4 +183,50 @@ class InfluencerControllerTest {
         mvc.perform(MockMvcRequestBuilders.delete("/api/influencer/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
+    @Test
+    void updateInfluencerPersonality_ValidRequest_ReturnsAcceptedStatus() throws Exception {
+        Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
+        Twitter twitter = new Twitter("2020", "name", "username", auth);
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null)));
+
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
+
+        mvc.perform(MockMvcRequestBuilders.patch("/api/influencer/1/personality")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "tone": [ "FRIENDLY" ],
+                                  "interest": [ "CULTURE", "ART" ]
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isAccepted())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                        {
+                          "tone": [ "FRIENDLY" ],
+                          "interest": [ "CULTURE", "ART" ]
+                        }
+                        """));
+
+        verify(mockInfluencerRepo, times(1)).findById(anyString());
+        verify(mockInfluencerRepo, times(1)).save(any(Influencer.class));
+    }
+
+    @Test
+    void updateInfluencerPersonality_InvalidId_ReturnsConflictStatus() throws Exception {
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
+
+        mvc.perform(MockMvcRequestBuilders.patch("/api/influencer/1/personality")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "tone": [ "FRIENDLY" ],
+                                  "interest": [ "CULTURE", "ART" ]
+                                }
+                                """))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+
+        verify(mockInfluencerRepo, times(1)).findById(anyString());
+    }
+
 }

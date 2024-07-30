@@ -1,10 +1,11 @@
 package dev.elfa.backend.service;
 
-import dev.elfa.backend.dto.InfluencerResponseDto;
 import dev.elfa.backend.dto.AuthDto;
+import dev.elfa.backend.dto.InfluencerResponseDto;
 import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -50,5 +51,14 @@ public class InfluencerService {
         }
 
         return true;
+    }
+
+    public Optional<Personality> updatePersonality(String id, Personality personality) {
+        return influencerRepo.findById(id).map(influencer -> {
+            influencer.setPersonality(personality);
+            influencerRepo.save(influencer);
+
+            return influencer.getPersonality();
+        });
     }
 }

@@ -1,6 +1,7 @@
 package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.InfluencerResponseDto;
+import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.service.InfluencerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,5 +49,14 @@ public class InfluencerController {
         return isDeleted
                 ? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PatchMapping("/{id}/personality")
+    public ResponseEntity<Personality> updateInfluencerPersonality(@PathVariable String id, @RequestBody Personality personalityRequestBody) {
+        Optional<Personality> updatedPersonality = influencerService.updatePersonality(id, personalityRequestBody);
+
+        return updatedPersonality
+                .map(personality -> ResponseEntity.status(HttpStatus.ACCEPTED).body(personality))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 }
