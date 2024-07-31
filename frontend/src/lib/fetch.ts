@@ -47,6 +47,8 @@ export async function DELETE(path: string, headers?: HeadersInit) {
     },
   });
 
+  if (response.status === 204 || response.headers.get('Content-Length') === '0') return {};
+
   return await response.json();
 }
 
