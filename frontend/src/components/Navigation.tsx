@@ -7,10 +7,10 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 
-interface NavigationItem {
+type NavigationItem = {
   title: string;
   href: string;
-}
+};
 
 export default function Navigation() {
   const components: NavigationItem[] = [
