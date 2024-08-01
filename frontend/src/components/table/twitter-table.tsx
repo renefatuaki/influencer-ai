@@ -2,19 +2,19 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable, SortingState } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DataTablePagination } from '@/components/DataTablePagination';
+import { Pagination } from '@/components/table/pagination';
 import { useEffect, useState } from 'react';
-import { Pagination } from '@/types';
+import { Pagination as PaginationType } from '@/types';
 import { GET } from '@/lib/fetch';
-import { TableData } from '@/components/table/Columns';
+import { TableData } from '@/components/table/columns';
 
 interface DataTableProps<TValue> {
   columns: ColumnDef<TableData, TValue>[];
 }
 
-export function DataTable<TValue>({ columns }: DataTableProps<TValue>) {
+export function TwitterTable<TValue>({ columns }: DataTableProps<TValue>) {
   const [tableData, setTableData] = useState<TableData[]>([]);
-  const [paginationData, setPaginationData] = useState<Pagination>();
+  const [paginationData, setPaginationData] = useState<PaginationType>();
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -26,7 +26,7 @@ export function DataTable<TValue>({ columns }: DataTableProps<TValue>) {
     GET(
       `influencer?page=${pagination.pageIndex}&size=${pagination.pageSize}&direction=${sorting[0].desc ? 'DESC' : 'ASC'}&sortBy=${sorting[0].id}`,
       'no-cache',
-    ).then((pagination: Pagination) => {
+    ).then((pagination: PaginationType) => {
       const table: TableData[] = pagination.content.map(({ id, twitter }) => ({
         id: id,
         twitterId: twitter.id,
@@ -87,7 +87,7 @@ export function DataTable<TValue>({ columns }: DataTableProps<TValue>) {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <Pagination table={table} />
     </>
   );
 }

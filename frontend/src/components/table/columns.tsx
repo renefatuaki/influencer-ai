@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Influencer, Twitter } from '@/types';
-import { DataTableColumnHeader } from '@/components/table/DataTableColumnHeader';
-import DeleteConfirmation from '@/components/DeleteConfirmation';
+import { ColumnHeader } from '@/components/table/column-header';
+import DeleteDialog from '@/components/delete-dialog';
 import Link from 'next/link';
 
 export type TableData = {
@@ -26,15 +26,15 @@ export type TableData = {
 export const columns: ColumnDef<TableData>[] = [
   {
     accessorKey: 'id',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
+    header: ({ column }) => <ColumnHeader column={column} title="ID" />,
   },
   {
     accessorKey: 'twitterId',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Twitter ID" />,
+    header: ({ column }) => <ColumnHeader column={column} title="Twitter ID" />,
   },
   {
     accessorKey: 'twitterUsername',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Username" />,
+    header: ({ column }) => <ColumnHeader column={column} title="Username" />,
     cell: ({ row }) => {
       const username: Twitter = row.getValue('twitterUsername');
 
@@ -43,7 +43,7 @@ export const columns: ColumnDef<TableData>[] = [
   },
   {
     accessorKey: 'isAuthorized',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+    header: ({ column }) => <ColumnHeader column={column} title="Status" />,
   },
   {
     id: 'actions',
@@ -64,7 +64,7 @@ export const columns: ColumnDef<TableData>[] = [
             <Link href={`/management/${id}`}>
               <DropdownMenuItem>Edit</DropdownMenuItem>
             </Link>
-            <DeleteConfirmation id={id}></DeleteConfirmation>
+            <DeleteDialog id={id}></DeleteDialog>
             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(id)}>Copy Username</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

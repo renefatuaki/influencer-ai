@@ -6,7 +6,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useState, MouseEvent } from 'react';
 import { DELETE } from '@/lib/fetch';
 
-export default function DeleteConfirmation({ id }: { id: string }) {
+export default function DeleteDialog({ id }: { id: string }) {
   const [open, setOpen] = useState(false);
 
   const handleClick = (event: MouseEvent) => {

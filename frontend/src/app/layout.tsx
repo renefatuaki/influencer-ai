@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import Navigation from '@/components/Navigation';
+import Navigation from '@/components/navigation';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
