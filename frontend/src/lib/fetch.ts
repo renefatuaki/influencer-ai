@@ -66,3 +66,18 @@ export async function PUT(path: string, body: object, headers?: HeadersInit) {
 
   return await response.json();
 }
+
+export async function PATCH(path: string, body: object, headers?: HeadersInit) {
+  const sanitizedPath = removeLeadingSlash(path);
+
+  const response = await fetch(`${API}/${sanitizedPath}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  return await response.json();
+}
