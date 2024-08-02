@@ -16,7 +16,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
-        <Navigation></Navigation>
+        <header>
+          <Navigation />
+        </header>
         <main>{children}</main>
       </body>
     </html>
