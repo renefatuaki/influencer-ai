@@ -176,19 +176,6 @@ export enum Style {
   WESTERN = 'WESTERN',
 }
 
-export type Appearance = {
-  bodyBuild: BodyBuild;
-  eyeColor: EyeColor;
-  eyeShape: EyeShape;
-  faceFeatures: FaceFeatures;
-  faceShape: FaceShape;
-  hairColor: HairColor;
-  hairLength: HairLength;
-  height: Height;
-  skinTone: SkinTone;
-  style: Style;
-};
-
 export type Twitter = {
   id: string;
   name: string;
@@ -198,25 +185,29 @@ export type Twitter = {
   };
 };
 
+export type Personality = {
+  tone: Tone[];
+  interest: Interest[];
+};
+
+export type Appearance = {
+  bodyBuild: BodyBuild;
+  eyeColor: EyeColor;
+  eyeShape: EyeShape;
+  faceFeatures: FaceFeatures[];
+  faceShape: FaceShape;
+  hairColor: HairColor;
+  hairLength: HairLength;
+  height: Height;
+  skinTone: SkinTone;
+  style: Style;
+};
+
 export type Influencer = {
   id: string;
   twitter: Twitter;
-  personality: {
-    tone: Tone[];
-    interest: Interest[];
-  };
-  appearance: {
-    bodyBuild: BodyBuild;
-    eyeColor: EyeColor;
-    eyeShape: EyeShape;
-    faceFeatures: FaceFeatures[];
-    faceShape: FaceShape;
-    hairColor: HairColor;
-    hairLength: HairLength;
-    height: Height;
-    skinTone: SkinTone;
-    style: Style;
-  };
+  personality: Personality;
+  appearance: Appearance;
 };
 
 export type Pagination = {
