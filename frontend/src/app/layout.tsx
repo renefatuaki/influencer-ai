@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <header>
           <Navigation />
         </header>
-        <main>{children}</main>
+        <main className="m-4">{children}</main>
       </body>
     </html>
   );

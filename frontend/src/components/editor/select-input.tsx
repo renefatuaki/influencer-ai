@@ -3,22 +3,22 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useState } from 'react';
 
 type SelectInputProps<T extends object> = {
+  className?: string;
   id: string;
   label: string;
   enums: T;
   data: string;
 };
 
-export default function SelectInput<T extends object>({ id, label, enums, data }: SelectInputProps<T>) {
+export default function SelectInput<T extends object>({ className, id, label, enums, data }: SelectInputProps<T>) {
   const options: string[] = Object.keys(enums);
   const [selectedOption, setSelectedOption] = useState<string>(data);
 
   return (
-    <>
+    <div className={`flex flex-col gap-2 my-2 ${className}`}>
       <Label className="text-base font-bold" htmlFor={label}>
         {label}
       </Label>
-      <input type="hidden" name={id} value={selectedOption} readOnly={true} />
       <Select
         value={selectedOption}
         onValueChange={(value) => {
@@ -38,6 +38,7 @@ export default function SelectInput<T extends object>({ id, label, enums, data }
           </SelectGroup>
         </SelectContent>
       </Select>
-    </>
+      <input type="hidden" name={id} value={selectedOption} readOnly={true} />
+    </div>
   );
 }
