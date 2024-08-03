@@ -1,0 +1,32 @@
+services:
+  #  server:
+  #    build:
+  #      context: .
+  #    ports:
+  #      - 8080:8080
+  #    env_file:
+  #      - .env
+  #    depends_on:
+  #      database:
+  #        condition: service_healthy
+  #      ollama-pull:
+  #        condition: service_completed_successfully
+  ollama-pull:
+    image: docker/genai:ollama-pull
+    env_file:
+      - .env
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_volume:/root/.ollama
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#      count: all
+#      capabilities: [ gpu ]
+volumes:
+  ollama_volume:
