@@ -3,10 +3,15 @@ package dev.elfa.backend.service;
 import dev.elfa.backend.dto.auth.AuthenticationResponse;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
 import dev.elfa.backend.dto.auth.TwitterAccountResponse;
+import dev.elfa.backend.dto.twitter.TweetData;
+import dev.elfa.backend.dto.twitter.TweetRequestBody;
+import dev.elfa.backend.dto.twitter.TweetResponse;
 import dev.elfa.backend.model.Influencer;
+import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.repository.InfluencerRepo;
+import dev.elfa.backend.repository.TweetsRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
@@ -26,19 +32,25 @@ public class TwitterService {
     private final String clientId;
     private final String clientPassword;
     private final InfluencerRepo influencerRepo;
+    private final TweetsRepo tweetsRepo;
+    private final OllamaService ollamaService;
 
     public TwitterService(
             @Value("${X_URL}") String baseUrl,
             @Value("${X_CLIENT_ID}") String clientId,
             @Value("${X_CLIENT_PW}") String clientPassword,
             @Value("${X_REDIRECT_URI}") String redirectUri,
-            InfluencerRepo influencerRepo
+            InfluencerRepo influencerRepo,
+            TweetsRepo tweetsRepo,
+            OllamaService ollamaService
     ) {
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
         this.clientId = clientId;
         this.clientPassword = clientPassword;
         this.redirectUri = redirectUri;
         this.influencerRepo = influencerRepo;
+        this.tweetsRepo = tweetsRepo;
+        this.ollamaService = ollamaService;
     }
 
     public Auth getAuthToken(String code) {
@@ -125,6 +137,29 @@ public class TwitterService {
             influencerRepo.save(updatedInfluencer);
 
             return updatedInfluencer;
+        });
+    }
+
+    public Optional<TweetData> tweetText(Influencer influencer) throws HttpClientErrorException {
+        String tweetText = ollamaService.createTweet(influencer.getPersonality());
+        Auth auth = influencer.getTwitter().auth();
+
+        if (isTokenExpired(auth)) refreshAuthToken(auth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(auth.getAccessToken());
+
+        ResponseEntity<TweetResponse> response = restClient.post()
+                .uri("/tweets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(new TweetRequestBody(tweetText))
+                .retrieve()
+                .toEntity(TweetResponse.class);
+
+        return Optional.ofNullable(response.getBody()).map(tweet -> {
+            tweetsRepo.save(new Tweet(tweet.data().id(), tweet.data().text(), LocalDateTime.now()));
+            return tweet.data();
         });
     }
 }

@@ -1,10 +1,16 @@
 package dev.elfa.backend.service;
 
 import dev.elfa.backend.dto.auth.TwitterAccountData;
+import dev.elfa.backend.dto.twitter.TweetData;
 import dev.elfa.backend.model.Influencer;
+import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.auth.Auth;
+import dev.elfa.backend.model.personality.Interest;
+import dev.elfa.backend.model.personality.Personality;
+import dev.elfa.backend.model.personality.Tone;
 import dev.elfa.backend.repository.InfluencerRepo;
+import dev.elfa.backend.repository.TweetsRepo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -20,8 +26,10 @@ import org.springframework.test.context.DynamicPropertySource;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,7 +39,13 @@ class TwitterServiceTest {
     private TwitterService twitterService;
 
     @MockBean
+    private OllamaService mockOllamaService;
+
+    @MockBean
     private InfluencerRepo mockInfluencerRepo;
+
+    @MockBean
+    private TweetsRepo mockTweetsRepo;
 
     private static MockWebServer mockWebServer;
 
@@ -138,5 +152,34 @@ class TwitterServiceTest {
         assertTrue(influencerOptional.isPresent());
         assertEquals("newName", influencerOptional.get().getTwitter().name());
         assertEquals("newUsername", influencerOptional.get().getTwitter().username());
+    }
+
+    @Test
+    void tweetText_ValidId_ReturnsTweet() {
+        Twitter twitter = new Twitter("1000", "oldName", "oldUsername", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().plusHours(1)));
+        Personality personality = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART));
+        Influencer influencer = new Influencer("1000", twitter, personality, null);
+        when(mockOllamaService.createTweet(influencer.getPersonality())).thenReturn("Are you excited for the weekend?");
+
+        Tweet tweet = new Tweet("100200300400500", "Are you excited for the weekend?", LocalDateTime.now());
+        when(mockTweetsRepo.save(tweet)).thenReturn(tweet);
+
+        mockWebServer.enqueue(new MockResponse()
+                .addHeader("Content-Type", "application/json")
+                .setBody("""
+                        {
+                          "data": {
+                            "id": "100200300400500",
+                            "text": "Are you excited for the weekend?"
+                          }
+                        }
+                        """)
+        );
+
+        Optional<TweetData> tweetResponse = twitterService.tweetText(influencer);
+
+        assertTrue(tweetResponse.isPresent());
+        assertEquals("100200300400500", tweetResponse.get().id());
+        assertEquals("Are you excited for the weekend?", tweetResponse.get().text());
     }
 }
