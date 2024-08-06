@@ -6,7 +6,6 @@ import dev.elfa.backend.dto.twitter.TweetData;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.service.InfluencerService;
-import dev.elfa.backend.service.OllamaService;
 import dev.elfa.backend.service.TwitterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import java.util.Optional;
 public class TwitterController {
     private final TwitterService twitterService;
     private final InfluencerService influencerService;
-    private final OllamaService ollamaService;
 
     @PostMapping
     public ResponseEntity<String> addTwitter(@RequestBody AuthorizationRequestBody authorizationRequestBody) {

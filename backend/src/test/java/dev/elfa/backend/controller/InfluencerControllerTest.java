@@ -39,11 +39,10 @@ class InfluencerControllerTest {
     @MockBean
     private InfluencerRepo mockInfluencerRepo;
 
-    private static MockWebServer mockWebServer;
+    private static final MockWebServer mockWebServer = new MockWebServer();
 
     @BeforeAll
     static void setup() throws IOException {
-        mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
 

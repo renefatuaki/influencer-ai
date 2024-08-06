@@ -1,12 +1,14 @@
 package dev.elfa.backend.controller;
 
 import dev.elfa.backend.model.Influencer;
+import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.personality.Interest;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.model.personality.Tone;
 import dev.elfa.backend.repository.InfluencerRepo;
+import dev.elfa.backend.repository.TweetsRepo;
 import dev.elfa.backend.service.OllamaService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -29,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -43,13 +46,15 @@ class TwitterControllerTest {
     private InfluencerRepo mockInfluencerRepo;
 
     @MockBean
+    private TweetsRepo mockTweetsRepo;
+
+    @MockBean
     private OllamaService mockOllamaService;
 
-    private static MockWebServer mockWebServer;
+    private static final MockWebServer mockWebServer = new MockWebServer();
 
     @BeforeAll
     static void setup() throws IOException {
-        mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
 
@@ -143,8 +148,10 @@ class TwitterControllerTest {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("1000", "name", "username", auth);
         Personality personality = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.FINANCE));
+
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1000", twitter, personality, null)));
         when(mockOllamaService.createTweet(personality)).thenReturn("Are you excited for the weekend?");
+        when(mockTweetsRepo.save(any(Tweet.class))).thenReturn(null);
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")

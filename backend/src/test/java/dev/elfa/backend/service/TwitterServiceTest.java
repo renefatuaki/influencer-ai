@@ -9,7 +9,6 @@ import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.personality.Interest;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.model.personality.Tone;
-import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -42,16 +41,12 @@ class TwitterServiceTest {
     private OllamaService mockOllamaService;
 
     @MockBean
-    private InfluencerRepo mockInfluencerRepo;
-
-    @MockBean
     private TweetsRepo mockTweetsRepo;
 
-    private static MockWebServer mockWebServer;
+    private static final MockWebServer mockWebServer = new MockWebServer();
 
     @BeforeAll
     static void setup() throws IOException {
-        mockWebServer = new MockWebServer();
         mockWebServer.start();
     }
 
