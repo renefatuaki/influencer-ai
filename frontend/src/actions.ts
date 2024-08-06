@@ -1,6 +1,6 @@
 'use server';
 
-import { PATCH } from '@/lib/fetch';
+import { PATCH, POST } from '@/lib/fetch';
 
 export async function updatePersonality(prevState: any, formData: FormData) {
   const id = formData.get('id');
@@ -69,4 +69,17 @@ export async function updateAppearance(prevState: any, formData: FormData) {
   }
 
   return { error: false, message: 'Appearance updated successfully!' };
+}
+
+export async function createTwitterTextPost(prevState: any, formData: FormData) {
+  const id = formData.get('id');
+  const response = await POST(`/twitter/tweet/${id}`, {});
+
+  if (response.status >= 300) {
+    return { error: true, message: 'There was an issue creating the Twitter text post. Please try again later.' };
+  }
+
+  const { text, link } = response;
+
+  return { error: false, message: `Twitter text post created successfully! Twitter post: ${text}`, link: link };
 }

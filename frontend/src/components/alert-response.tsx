@@ -4,9 +4,10 @@ import { AlertCircle, CircleCheckBig } from 'lucide-react';
 export type Response = {
   message: string;
   error: boolean;
+  link?: string;
 };
 
-export default function AlertResponse({ error, message }: Response) {
+export default function AlertResponse({ error, message, link }: Response) {
   if (message === '') return null;
 
   return (
@@ -21,7 +22,9 @@ export default function AlertResponse({ error, message }: Response) {
         <Alert variant="default">
           <CircleCheckBig className="h-4 w-4 stroke-green-700" />
           <AlertTitle className="text-green-700">Success</AlertTitle>
-          <AlertDescription className="text-green-700">{message}</AlertDescription>
+          <AlertDescription className="text-green-700">
+            <a href={link}>{message}</a>
+          </AlertDescription>
         </Alert>
       )}
     </>

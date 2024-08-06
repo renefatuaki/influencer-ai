@@ -21,6 +21,7 @@ import Editor from '@/components/editor/editor';
 import { updateAppearance, updatePersonality } from '@/actions';
 import ToggleList from '@/components/editor/toggle-list';
 import SelectInput from '@/components/editor/select-input';
+import Actions from '@/components/actions';
 
 type ParamsProps = {
   params: {
@@ -47,14 +48,14 @@ export default function InfluencerSettings({ params }: ParamsProps) {
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-rows-2 grid-cols-4 gap-4">
         <div className="col-span-4 lg:col-span-2">
           <Editor influencerId={id} title="Personality" description={personalityDescription} action={updatePersonality}>
             <ToggleList id="tone" label="Tone" enums={Tone} data={influencer.personality.tone} />
             <ToggleList id="interest" label="Interest" enums={Interest} data={influencer.personality.interest} />
           </Editor>
         </div>
-        <div className="col-span-4 lg:col-span-2">
+        <div className="row-span-2 col-span-4 lg:col-span-2">
           <Editor influencerId={id} title="Appearance" description={appearanceDescription} action={updateAppearance}>
             <div className="grid grid-cols-2 gap-2">
               <ToggleList className="col-span-2" id="face-features" label="Face Features" enums={FaceFeatures} data={faceFeatures} />
@@ -69,6 +70,9 @@ export default function InfluencerSettings({ params }: ParamsProps) {
               <SelectInput className="col-span-2 md:col-span-1" id="style" label="Style" enums={Style} data={style} />
             </div>
           </Editor>
+        </div>
+        <div className="col-span-4 lg:col-span-2">
+          <Actions influencerId={id} />
         </div>
       </div>
     </>
