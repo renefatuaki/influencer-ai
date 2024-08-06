@@ -16,5 +16,6 @@ public class Tweet {
     @Id
     private String id;
     private String text;
+    private String link;
     private LocalDateTime createdAt;
 }

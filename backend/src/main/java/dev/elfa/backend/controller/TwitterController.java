@@ -2,8 +2,8 @@ package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.auth.AuthorizationRequestBody;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
-import dev.elfa.backend.dto.twitter.TweetData;
 import dev.elfa.backend.model.Influencer;
+import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.service.InfluencerService;
 import dev.elfa.backend.service.TwitterService;
@@ -53,13 +53,13 @@ public class TwitterController {
     }
 
     @PostMapping("/tweet/{id}")
-    public ResponseEntity<TweetData> tweetText(@PathVariable String id) {
+    public ResponseEntity<Tweet> tweetText(@PathVariable String id) {
         Optional<Influencer> influencer = influencerService.getInfluencer(id);
 
         if (influencer.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         try {
-            Optional<TweetData> tweetData = twitterService.tweetText(influencer.get());
+            Optional<Tweet> tweetData = twitterService.tweetText(influencer.get());
 
             return tweetData
                     .map(data -> ResponseEntity.status(HttpStatus.OK).body(data))

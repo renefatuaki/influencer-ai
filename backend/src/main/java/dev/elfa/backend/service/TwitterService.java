@@ -3,7 +3,6 @@ package dev.elfa.backend.service;
 import dev.elfa.backend.dto.auth.AuthenticationResponse;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
 import dev.elfa.backend.dto.auth.TwitterAccountResponse;
-import dev.elfa.backend.dto.twitter.TweetData;
 import dev.elfa.backend.dto.twitter.TweetRequestBody;
 import dev.elfa.backend.dto.twitter.TweetResponse;
 import dev.elfa.backend.model.Influencer;
@@ -140,7 +139,7 @@ public class TwitterService {
         });
     }
 
-    public Optional<TweetData> tweetText(Influencer influencer) throws HttpClientErrorException {
+    public Optional<Tweet> tweetText(Influencer influencer) throws HttpClientErrorException {
         String tweetText = ollamaService.createTweet(influencer.getPersonality());
         Auth auth = influencer.getTwitter().auth();
 
@@ -158,8 +157,10 @@ public class TwitterService {
                 .toEntity(TweetResponse.class);
 
         return Optional.ofNullable(response.getBody()).map(tweet -> {
-            tweetsRepo.save(new Tweet(tweet.data().id(), tweet.data().text(), LocalDateTime.now()));
-            return tweet.data();
+            String link = String.format("https://x.com/%s/status/%s", influencer.getTwitter().id(), tweet.data().id());
+            Tweet newTweet = new Tweet(tweet.data().id(), tweet.data().text(), link, LocalDateTime.now());
+            tweetsRepo.save(newTweet);
+            return newTweet;
         });
     }
 }

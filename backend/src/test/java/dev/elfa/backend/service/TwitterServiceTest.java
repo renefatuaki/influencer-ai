@@ -1,7 +1,6 @@
 package dev.elfa.backend.service;
 
 import dev.elfa.backend.dto.auth.TwitterAccountData;
-import dev.elfa.backend.dto.twitter.TweetData;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
@@ -158,12 +157,12 @@ class TwitterServiceTest {
 
     @Test
     void tweetText_ValidId_ReturnsTweet() {
-        Twitter twitter = new Twitter("1000", "oldName", "oldUsername", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().plusHours(1)));
+        Twitter twitter = new Twitter("1000", "name", "username", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().plusHours(1)));
         Personality personality = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART));
         Influencer influencer = new Influencer("1000", twitter, personality, null);
         when(mockOllamaService.createTweet(influencer.getPersonality())).thenReturn("Are you excited for the weekend?");
 
-        Tweet tweet = new Tweet("100200300400500", "Are you excited for the weekend?", LocalDateTime.now());
+        Tweet tweet = new Tweet("100200300400500", "Are you excited for the weekend?", "https://x.com/username/status/100200300400500", LocalDateTime.now());
         when(mockTweetsRepo.save(tweet)).thenReturn(tweet);
 
         mockWebServer.enqueue(new MockResponse()
@@ -178,10 +177,10 @@ class TwitterServiceTest {
                         """)
         );
 
-        Optional<TweetData> tweetResponse = twitterService.tweetText(influencer);
+        Optional<Tweet> tweetResponse = twitterService.tweetText(influencer);
 
         assertTrue(tweetResponse.isPresent());
-        assertEquals("100200300400500", tweetResponse.get().id());
-        assertEquals("Are you excited for the weekend?", tweetResponse.get().text());
+        assertEquals("100200300400500", tweetResponse.get().getId());
+        assertEquals("Are you excited for the weekend?", tweetResponse.get().getText());
     }
 }
