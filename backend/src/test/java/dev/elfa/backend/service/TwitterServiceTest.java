@@ -9,6 +9,7 @@ import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.personality.Interest;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.model.personality.Tone;
+import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -39,6 +41,9 @@ class TwitterServiceTest {
 
     @MockBean
     private OllamaService mockOllamaService;
+
+    @MockBean
+    private InfluencerRepo mockInfluencerRepo;
 
     @MockBean
     private TweetsRepo mockTweetsRepo;
@@ -115,6 +120,8 @@ class TwitterServiceTest {
     void updateAccount_ValidData_UpdatesAccount() {
         Twitter twitter = new Twitter("1000", "oldName", "oldUsername", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().minusHours(1)));
         Influencer influencer = new Influencer(twitter);
+
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(influencer);
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
