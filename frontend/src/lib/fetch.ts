@@ -6,6 +6,12 @@ function removeLeadingSlash(path: string) {
   return path.startsWith('/') ? path.slice(1) : path;
 }
 
+async function parseResponse(response: Response) {
+  if (response.status === 204 || response.headers.get('Content-Length') === '0') return { status: response.status };
+
+  return { status: response.status, ...(await response.json()) };
+}
+
 export async function GET(path: string, cache?: RequestCache, headers?: HeadersInit) {
   const sanitizedPath = removeLeadingSlash(path);
 
@@ -17,7 +23,7 @@ export async function GET(path: string, cache?: RequestCache, headers?: HeadersI
     },
   });
 
-  return await response.json();
+  return parseResponse(response);
 }
 
 export async function POST(path: string, body: object, headers?: HeadersInit) {
@@ -32,9 +38,7 @@ export async function POST(path: string, body: object, headers?: HeadersInit) {
     body: JSON.stringify(body),
   });
 
-  if (response.status === 204 || response.headers.get('Content-Length') === '0') return {};
-
-  return await response.json();
+  return parseResponse(response);
 }
 
 export async function DELETE(path: string, headers?: HeadersInit) {
@@ -47,9 +51,7 @@ export async function DELETE(path: string, headers?: HeadersInit) {
     },
   });
 
-  if (response.status === 204 || response.headers.get('Content-Length') === '0') return {};
-
-  return await response.json();
+  return parseResponse(response);
 }
 
 export async function PUT(path: string, body: object, headers?: HeadersInit) {
@@ -64,7 +66,7 @@ export async function PUT(path: string, body: object, headers?: HeadersInit) {
     body: JSON.stringify(body),
   });
 
-  return await response.json();
+  return parseResponse(response);
 }
 
 export async function PATCH(path: string, body: object, headers?: HeadersInit) {
@@ -79,5 +81,5 @@ export async function PATCH(path: string, body: object, headers?: HeadersInit) {
     body: JSON.stringify(body),
   });
 
-  return await response.json();
+  return parseResponse(response);
 }
