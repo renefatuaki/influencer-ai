@@ -10,7 +10,7 @@ interface DataTablePaginationProps<TData> {
 
 export function Pagination<TData>({ table }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-end px-2 mt-4">
+    <div className="flex items-center justify-end">
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
