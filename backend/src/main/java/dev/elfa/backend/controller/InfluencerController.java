@@ -1,6 +1,6 @@
 package dev.elfa.backend.controller;
 
-import dev.elfa.backend.dto.InfluencerResponseDto;
+import dev.elfa.backend.dto.InfluencerDto;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.service.InfluencerService;
@@ -22,8 +22,8 @@ public class InfluencerController {
     private final InfluencerService influencerService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<InfluencerResponseDto> getInfluencer(@PathVariable String id) {
-        Optional<InfluencerResponseDto> influencerResponseDto = influencerService.getInfluencerDto(id);
+    public ResponseEntity<InfluencerDto> getInfluencer(@PathVariable String id) {
+        Optional<InfluencerDto> influencerResponseDto = influencerService.getInfluencerDto(id);
 
         return influencerResponseDto
                 .map(influencer -> ResponseEntity.status(HttpStatus.OK).body(influencer))
@@ -31,14 +31,14 @@ public class InfluencerController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<InfluencerResponseDto>> getInfluencers(
+    public ResponseEntity<Page<InfluencerDto>> getInfluencers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "DESC") Sort.Direction direction,
             @RequestParam(defaultValue = "id") String sortBy
     ) {
         Pageable pageable = PageRequest.of(page, size, direction, sortBy);
-        Page<InfluencerResponseDto> influencers = influencerService.getInfluencers(pageable);
+        Page<InfluencerDto> influencers = influencerService.getInfluencers(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(influencers);
     }

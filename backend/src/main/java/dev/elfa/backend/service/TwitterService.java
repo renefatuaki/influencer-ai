@@ -8,7 +8,9 @@ import dev.elfa.backend.dto.twitter.TweetResponse;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.auth.Auth;
+import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,7 @@ import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TwitterService {
@@ -119,10 +122,12 @@ public class TwitterService {
         return Optional.ofNullable(response).map(TwitterAccountResponse::data);
     }
 
-    public void saveAccount(TwitterAccountData account, Auth auth) {
+    public Influencer saveAccount(TwitterAccountData account, Auth auth) {
         Twitter twitter = new Twitter(account.id(), account.name(), account.username(), auth);
-        Influencer influencer = new Influencer(twitter);
-        influencerRepo.save(influencer);
+        Personality personality = new Personality(Set.of(), Set.of());
+        Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null);
+        Influencer influencer = new Influencer(account.id(), twitter, personality, appearance);
+        return influencerRepo.save(influencer);
     }
 
     public Optional<Influencer> updateAccount(Influencer influencer) {

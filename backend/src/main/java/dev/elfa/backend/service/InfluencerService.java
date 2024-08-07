@@ -1,7 +1,7 @@
 package dev.elfa.backend.service;
 
 import dev.elfa.backend.dto.AuthDto;
-import dev.elfa.backend.dto.InfluencerResponseDto;
+import dev.elfa.backend.dto.InfluencerDto;
 import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
@@ -20,24 +20,24 @@ import java.util.Optional;
 public class InfluencerService {
     private final InfluencerRepo influencerRepo;
 
-    public Optional<InfluencerResponseDto> getInfluencerDto(String id) {
+    public Optional<InfluencerDto> getInfluencerDto(String id) {
         Optional<Influencer> influencer = influencerRepo.findById(id);
 
         return influencer.map(this::mapToInfluencerResponseDto);
     }
 
-    public Page<InfluencerResponseDto> getInfluencers(Pageable pageable) {
+    public Page<InfluencerDto> getInfluencers(Pageable pageable) {
         Page<Influencer> influencerPage = influencerRepo.findAll(pageable);
 
         return influencerPage.map(this::mapToInfluencerResponseDto);
     }
 
-    private InfluencerResponseDto mapToInfluencerResponseDto(Influencer influencer) {
+    private InfluencerDto mapToInfluencerResponseDto(Influencer influencer) {
         Twitter twitter = influencer.getTwitter();
         AuthDto authDto = new AuthDto(twitter.auth().isAuthorized());
         TwitterDto twitterDto = new TwitterDto(twitter.id(), twitter.name(), twitter.username(), authDto);
 
-        return new InfluencerResponseDto(influencer.getId(), twitterDto, influencer.getPersonality(), influencer.getAppearance());
+        return new InfluencerDto(influencer.getId(), twitterDto, influencer.getPersonality(), influencer.getAppearance());
     }
 
     public Optional<Influencer> getInfluencer(String id) {

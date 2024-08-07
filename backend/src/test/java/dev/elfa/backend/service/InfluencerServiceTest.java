@@ -1,7 +1,7 @@
 package dev.elfa.backend.service;
 
 import dev.elfa.backend.dto.AuthDto;
-import dev.elfa.backend.dto.InfluencerResponseDto;
+import dev.elfa.backend.dto.InfluencerDto;
 import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
@@ -40,11 +40,11 @@ class InfluencerServiceTest {
 
         AuthDto authDto = new AuthDto(true);
         TwitterDto twitterDto = new TwitterDto("1", "name", "username", authDto);
-        InfluencerResponseDto influencerResponseDto = new InfluencerResponseDto("1", twitterDto, null, null);
+        InfluencerDto influencerDto = new InfluencerDto("1", twitterDto, null, null);
 
-        Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("1");
+        Optional<InfluencerDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
-        assertEquals(actualResponseDto, Optional.of(influencerResponseDto));
+        assertEquals(actualResponseDto, Optional.of(influencerDto));
     }
 
     @Test
@@ -53,7 +53,7 @@ class InfluencerServiceTest {
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("1");
+        Optional<InfluencerDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
         assertTrue(actualResponseDto.isEmpty());
     }
@@ -64,7 +64,7 @@ class InfluencerServiceTest {
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        Optional<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencerDto("");
+        Optional<InfluencerDto> actualResponseDto = influencerService.getInfluencerDto("");
         verify(mockInfluencerRepo, times(1)).findById("");
         assertEquals(actualResponseDto, Optional.empty());
     }
@@ -79,9 +79,9 @@ class InfluencerServiceTest {
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        Page<InfluencerResponseDto> influencerResponseDtoPage = getInfluencersDtoPageData();
+        Page<InfluencerDto> influencerResponseDtoPage = getInfluencersDtoPageData();
 
-        Page<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencers(pageable);
+        Page<InfluencerDto> actualResponseDto = influencerService.getInfluencers(pageable);
         verify(mockInfluencerRepo, times(1)).findAll(pageable);
         assertEquals(actualResponseDto, influencerResponseDtoPage);
     }
@@ -99,16 +99,16 @@ class InfluencerServiceTest {
     }
 
 
-    private static @NotNull Page<InfluencerResponseDto> getInfluencersDtoPageData() {
+    private static @NotNull Page<InfluencerDto> getInfluencersDtoPageData() {
         AuthDto authDto1 = new AuthDto(true);
         TwitterDto twitterDto1 = new TwitterDto("1", "name", "username", authDto1);
-        InfluencerResponseDto influencerResponseDto1 = new InfluencerResponseDto("1", twitterDto1, null, null);
+        InfluencerDto influencerDto1 = new InfluencerDto("1", twitterDto1, null, null);
 
         AuthDto authDto2 = new AuthDto(true);
         TwitterDto twitterDto2 = new TwitterDto("1", "name", "username", authDto2);
-        InfluencerResponseDto influencerResponseDto2 = new InfluencerResponseDto("1", twitterDto2, null, null);
+        InfluencerDto influencerDto2 = new InfluencerDto("1", twitterDto2, null, null);
 
-        return new PageImpl<>(Arrays.asList(influencerResponseDto1, influencerResponseDto2));
+        return new PageImpl<>(Arrays.asList(influencerDto1, influencerDto2));
     }
 
     @Test
@@ -119,7 +119,7 @@ class InfluencerServiceTest {
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
-        Page<InfluencerResponseDto> actualResponseDto = influencerService.getInfluencers(pageable);
+        Page<InfluencerDto> actualResponseDto = influencerService.getInfluencers(pageable);
         verify(mockInfluencerRepo, times(1)).findAll(pageable);
         assertEquals(actualResponseDto, new PageImpl<>(Collections.emptyList()));
     }

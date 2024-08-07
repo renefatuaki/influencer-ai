@@ -3,6 +3,7 @@ package dev.elfa.backend.controller;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.personality.Interest;
 import dev.elfa.backend.model.personality.Personality;
@@ -74,6 +75,14 @@ class TwitterControllerTest {
 
     @Test
     void addTwitter_ValidRequest_ReturnsCreatedStatus() throws Exception {
+        Personality personality = new Personality(Set.of(), Set.of());
+        Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null);
+        Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
+        Twitter twitter = new Twitter("1000", "name", "username", auth);
+        Influencer influencer = new Influencer("1000", twitter, personality, appearance);
+
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(influencer);
+
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
                 .setBody("""

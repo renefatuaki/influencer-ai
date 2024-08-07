@@ -1,5 +1,7 @@
 package dev.elfa.backend.controller;
 
+import dev.elfa.backend.dto.InfluencerDto;
+import dev.elfa.backend.dto.ResponseWrapper;
 import dev.elfa.backend.dto.auth.AuthorizationRequestBody;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
 import dev.elfa.backend.model.Influencer;
@@ -23,22 +25,22 @@ public class TwitterController {
     private final InfluencerService influencerService;
 
     @PostMapping
-    public ResponseEntity<String> addTwitter(@RequestBody AuthorizationRequestBody authorizationRequestBody) {
+    public ResponseEntity<ResponseWrapper<InfluencerDto>> addTwitter(@RequestBody AuthorizationRequestBody authorizationRequestBody) {
         Auth auth = twitterService.getAuthToken(authorizationRequestBody.code());
 
         if (!auth.isAuthorized()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body("Account couldn't be authenticated. Restart the authorization process.");
+                .body(new ResponseWrapper<>("Account couldn't be authenticated. Restart the authorization process."));
 
         Optional<TwitterAccountData> twitterAccountData = twitterService.getAccountData(auth.getAccessToken());
 
         if (twitterAccountData.isEmpty()) return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body("Account couldn't be retrieved. Restart the authorization process.");
+                .body(new ResponseWrapper<>("Account couldn't be retrieved. Restart the authorization process."));
 
-        twitterService.saveAccount(twitterAccountData.get(), auth);
+        Influencer influencer = twitterService.saveAccount(twitterAccountData.get(), auth);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseWrapper<>(InfluencerDto.convertToDto(influencer)));
     }
 
     @PutMapping("/{id}")
