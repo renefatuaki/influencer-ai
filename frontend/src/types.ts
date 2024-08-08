@@ -100,6 +100,11 @@ export enum FaceShape {
   TRIANGLE = 'TRIANGLE',
 }
 
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+}
+
 export enum HairColor {
   BLACK = 'BLACK',
   BLONDE = 'BLONDE',
@@ -196,6 +201,7 @@ export type Appearance = {
   eyeShape: EyeShape;
   faceFeatures: FaceFeatures[];
   faceShape: FaceShape;
+  gender: Gender;
   hairColor: HairColor;
   hairLength: HairLength;
   height: Height;

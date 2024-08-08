@@ -125,7 +125,7 @@ public class TwitterService {
     public Influencer saveAccount(TwitterAccountData account, Auth auth) {
         Twitter twitter = new Twitter(account.id(), account.name(), account.username(), auth);
         Personality personality = new Personality(Set.of(), Set.of());
-        Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null);
+        Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
         Influencer influencer = new Influencer(account.id(), twitter, personality, appearance);
         return influencerRepo.save(influencer);
     }

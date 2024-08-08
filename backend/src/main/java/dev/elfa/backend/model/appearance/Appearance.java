@@ -11,6 +11,7 @@ public record Appearance(
         EyeShape eyeShape,
         Set<FaceFeatures> faceFeatures,
         FaceShape faceShape,
+        Gender gender,
         HairColor hairColor,
         HairLength hairLength,
         Height height,
