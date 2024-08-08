@@ -43,10 +43,15 @@ class StabilityServiceTest {
     void createInfluencerImage_ValidId_ReturnsImage() {
         byte[] image = new byte[]{1, 2, 3};
 
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "image/webp")
-                .setBody(new Buffer().write(image))
-        );
+        try (Buffer buffer = new Buffer().write(image)) {
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "image/webp")
+                    .setBody(buffer)
+            );
+        } catch (Exception e) {
+            fail(e);
+        }
+
 
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
         Influencer influencer = new Influencer("1000", null, null, appearance);
