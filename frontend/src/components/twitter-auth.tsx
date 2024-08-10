@@ -18,13 +18,13 @@ export default function TwitterAuth({ url }: { url: string }) {
   const router = useRouter();
 
   const clickHandler = async () => {
-    const response = await POST('/twitter', { code, state });
+    const { data } = await POST('/twitter', { code, state });
 
-    if (!response.data) {
-      setMessage(response.message);
+    if (!data) {
+      setMessage(data.message);
       setError(true);
     } else {
-      router.push(`/management/${response.data.id}`);
+      router.push(`/management/${data.id}`);
     }
   };
 
