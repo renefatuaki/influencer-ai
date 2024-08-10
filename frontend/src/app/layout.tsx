@@ -16,10 +16,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
-        <header>
+        <header className="container">
           <Navigation />
         </header>
-        <main className="m-4">{children}</main>
+        <main className="container">{children}</main>
       </body>
     </html>
   );

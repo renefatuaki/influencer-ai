@@ -38,7 +38,7 @@ export default function Navigation() {
 
   return (
     <>
-      <NavigationMenu>
+      <NavigationMenu className="my-4">
         <NavigationMenuList>
           {components.map(({ title, href }: NavigationItem) => (
             <NavigationMenuItem key={title}>
