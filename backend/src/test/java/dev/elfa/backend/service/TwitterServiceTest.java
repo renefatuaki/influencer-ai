@@ -24,6 +24,7 @@ import org.springframework.test.context.DynamicPropertySource;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -182,5 +183,28 @@ class TwitterServiceTest {
         assertTrue(tweetResponse.isPresent());
         assertEquals("100200300400500", tweetResponse.get().getId());
         assertEquals("Are you excited for the weekend?", tweetResponse.get().getText());
+    }
+
+    @Test
+    void getTweets_List_ReturnsListOfTweet() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Tweet tweet1 = new Tweet("1000", "Hello World", "https://x.com/1000/status/1010", localDateTime);
+        Tweet tweet2 = new Tweet("1001", "Hello World", "https://x.com/1001/status/1010", localDateTime);
+        List<Tweet> expectedTweets = List.of(tweet1, tweet2);
+        when(mockTweetsRepo.findAll()).thenReturn(expectedTweets);
+
+        List<Tweet> tweets = twitterService.getTweets();
+
+        assertEquals(expectedTweets, tweets);
+    }
+
+    @Test
+    void getTweets_EmptyList_ReturnsEmptyList() {
+        List<Tweet> expectedTweets = List.of();
+        when(mockTweetsRepo.findAll()).thenReturn(expectedTweets);
+
+        List<Tweet> tweets = twitterService.getTweets();
+
+        assertEquals(expectedTweets, tweets);
     }
 }

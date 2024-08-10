@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -69,5 +70,12 @@ public class TwitterController {
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(null);
         }
+    }
+
+    @GetMapping("/tweets")
+    public ResponseEntity<List<Tweet>> getTweets() {
+        List<Tweet> tweets = twitterService.getTweets();
+
+        return ResponseEntity.status(HttpStatus.OK).body(tweets);
     }
 }

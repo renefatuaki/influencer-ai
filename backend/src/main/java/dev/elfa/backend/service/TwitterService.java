@@ -24,6 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -167,5 +168,9 @@ public class TwitterService {
             tweetsRepo.save(newTweet);
             return newTweet;
         });
+    }
+
+    public List<Tweet> getTweets() {
+        return tweetsRepo.findAll();
     }
 }

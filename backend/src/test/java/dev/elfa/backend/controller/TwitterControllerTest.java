@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -190,5 +191,41 @@ class TwitterControllerTest {
 
         mvc.perform(MockMvcRequestBuilders.post("/api/twitter/tweet/1000"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void getTweets_ValidRequest_ReturnsOkStatus() throws Exception {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Tweet tweet1 = new Tweet("1000", "Hello World", "https://x.com/1000/status/1010", localDateTime);
+        Tweet tweet2 = new Tweet("1001", "Hello World", "https://x.com/1001/status/1010", localDateTime);
+        when(mockTweetsRepo.findAll()).thenReturn(List.of(tweet1, tweet2));
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/twitter/tweets"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(String.format("""
+                        [
+                            {
+                                "id": "1000",
+                                "text": "Hello World",
+                                "link": "https://x.com/1000/status/1010",
+                                "createdAt": "%s"
+                            },
+                            {
+                                "id": "1001",
+                                "text": "Hello World",
+                                "link": "https://x.com/1001/status/1010",
+                                "createdAt": "%s"
+                            }
+                        ]
+                        """, tweet1.getCreatedAt().toString(), tweet2.getCreatedAt().toString()), false));
+    }
+
+    @Test
+    void getTweets_EmptyList_ReturnsOkStatus() throws Exception {
+        when(mockTweetsRepo.findAll()).thenReturn(List.of());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/twitter/tweets"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json("[]"));
     }
 }
