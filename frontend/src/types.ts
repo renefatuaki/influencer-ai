@@ -244,3 +244,10 @@ export type Pagination = {
   };
   empty: boolean;
 };
+
+export type ActivityProps = {
+  id: string;
+  text: string;
+  link: string;
+  createdAt: string;
+};
