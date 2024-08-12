@@ -1,43 +1,18 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { createTwitterTextPost } from '@/actions';
-import { useFormState } from 'react-dom';
-import { SubmitButton } from '@/components/submit-button';
-import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import TextGeneration from '@/components/actions/text-generation';
 
-export default function Actions({ influencerId }: { influencerId: string }) {
-  const [state, formAction] = useFormState(createTwitterTextPost, {
-    error: false,
-    message: '',
-    link: '',
-  });
-
+export default function Actions({ twitterId }: Readonly<{ twitterId: string }>) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Actions</CardTitle>
         <CardDescription>
-          Utilize AI to generate engaging text or images for your influencer's Twitter posts, enhancing their online presence and
-          interaction.
+          Utilize AI to generate engaging text or images for your influencer's Twitter posts, enhancing their online presence and interaction.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form action={formAction}>
-          <input type="hidden" name="id" value={influencerId} readOnly={true} />
-          <SubmitButton state={state} isLoading={true}>
-            Post Text on Twitter
-          </SubmitButton>
-        </form>
+      <CardContent className="flex flex-col gap-2">
+        <TextGeneration twitterId={twitterId} />
       </CardContent>
-      {state.link && (
-        <CardFooter className="flex justify-end">
-          <Link href={state.link} target="_blank">
-            <Button type="button" variant="outline">
-              See Post on Twitter
-            </Button>
-          </Link>
-        </CardFooter>
-      )}
     </Card>
   );
 }
