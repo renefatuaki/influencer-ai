@@ -1,6 +1,8 @@
 'use server';
 
-import { PATCH, POST } from '@/lib/fetch';
+import { POST, PUT } from '@/lib/fetch';
+
+const { API } = process.env;
 
 export async function updatePersonality(prevState: any, formData: FormData) {
   const id = formData.get('id');
@@ -11,7 +13,7 @@ export async function updatePersonality(prevState: any, formData: FormData) {
     return { error: true, message: 'Please provide both tone and interest data to update the personality.' };
   }
 
-  const response = await PATCH(`/influencer/${id}/personality`, {
+  const response = await PUT(`/influencer/${id}/personality`, {
     tone: tone.toString().split(','),
     interest: interest.toString().split(','),
   });
@@ -53,7 +55,7 @@ export async function updateAppearance(prevState: any, formData: FormData) {
     return { error: true, message: 'Please provide all appearance data to update the appearance.' };
   }
 
-  const response = await PATCH(`/influencer/${id}/appearance`, {
+  const response = await PUT(`/influencer/${id}/appearance`, {
     bodyBuild: bodyBuild.toString(),
     eyeColor: eyeColor.toString(),
     eyeShape: eyeShape.toString(),
@@ -71,7 +73,7 @@ export async function updateAppearance(prevState: any, formData: FormData) {
     return { error: true, message: 'There was an issue updating the appearance. Please try again later.' };
   }
 
-  return { error: false, message: 'Appearance updated successfully!' };
+  return { error: false, message: 'Appearance updated successfully. Next update the base image.' };
 }
 
 export async function createTwitterTextPost(prevState: any, formData: FormData) {
@@ -85,4 +87,8 @@ export async function createTwitterTextPost(prevState: any, formData: FormData) 
   const { text, link } = response.data;
 
   return { error: false, message: `Twitter text post created successfully! Twitter post: ${text}`, link: link };
+}
+
+export async function updateTwitterBaseImage(id: string) {
+  await fetch(`${process.env.API}/stability/base-image/${id}`, { method: 'PUT' });
 }

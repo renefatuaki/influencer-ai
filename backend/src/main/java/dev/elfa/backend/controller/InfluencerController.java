@@ -52,7 +52,7 @@ public class InfluencerController {
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    @PatchMapping("/{id}/personality")
+    @PutMapping("/{id}/personality")
     public ResponseEntity<Personality> updateInfluencerPersonality(@PathVariable String id, @RequestBody Personality personalityRequestBody) {
         Optional<Personality> updatedPersonality = influencerService.updatePersonality(id, personalityRequestBody);
 
@@ -61,7 +61,7 @@ public class InfluencerController {
                 .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 
-    @PatchMapping("/{id}/appearance")
+    @PutMapping("/{id}/appearance")
     public ResponseEntity<Appearance> updateInfluencerAppearance(@PathVariable String id, @RequestBody Appearance appearanceRequestBody) {
         Optional<Appearance> updatedAppearance = influencerService.updateAppearance(id, appearanceRequestBody);
 
