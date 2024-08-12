@@ -24,6 +24,7 @@ import ToggleList from '@/components/editor/toggle-list';
 import SelectInput from '@/components/editor/select-input';
 import Actions from '@/components/actions';
 import TwitterDetails from '@/components/twitter';
+import BaseImage from '@/base-image';
 
 type ParamsProps = {
   params: {
@@ -46,39 +47,45 @@ export default function InfluencerSettings({ params }: Readonly<ParamsProps>) {
 
   if (influencer === undefined) return null;
 
-  const { bodyBuild, eyeColor, eyeShape, faceFeatures, faceShape, gender, hairColor, hairLength, height, skinTone, style } =
-    influencer.appearance;
+  const { bodyBuild, eyeColor, eyeShape, faceFeatures, faceShape, gender, hairColor, hairLength, height, skinTone, style } = influencer.appearance;
 
   return (
-    <div className="grid grid-cols-4 grid-flow-row gap-4">
-      <div className="col-span-4 lg:col-span-2">
-        <TwitterDetails data={influencer.twitter} />
+    <div className="grid grid-cols-12 gap-4">
+      <div className="grid col-span-12 lg:col-span-4 lg:flex lg:flex-col gap-4">
+        <div className="col-span-12 md:col-span-6 lg:col-span-4">
+          <BaseImage twitterId={id} />
+        </div>
+        <div className="md:grid col-span-12 md:col-span-6 lg:col-span-4">
+          <TwitterDetails data={influencer.twitter} />
+        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <Actions twitterId={id} />
+        </div>
       </div>
-      <div className="col-span-4 lg:col-span-2">
-        <Actions influencerId={id} />
-      </div>
-      <div className="col-span-4 lg:col-span-2">
-        <Editor influencerId={id} title="Personality" description={personalityDescription} action={updatePersonality}>
-          <ToggleList id="tone" label="Tone" enums={Tone} data={influencer.personality.tone} />
-          <ToggleList id="interest" label="Interest" enums={Interest} data={influencer.personality.interest} />
-        </Editor>
-      </div>
-      <div className="col-span-4 lg:col-span-2">
-        <Editor influencerId={id} title="Appearance" description={appearanceDescription} action={updateAppearance}>
-          <div className="grid grid-cols-2 gap-2">
-            <ToggleList className="col-span-2" id="face-features" label="Face Features" enums={FaceFeatures} data={faceFeatures} />
-            <SelectInput className="col-span-2 md:col-span-1" id="body-build" label="Body Build" enums={BodyBuild} data={bodyBuild} />
-            <SelectInput className="col-span-2 md:col-span-1" id="eye-color" label="Eye Color" enums={EyeColor} data={eyeColor} />
-            <SelectInput className="col-span-2 md:col-span-1" id="eye-shape" label="Eye Shape" enums={EyeShape} data={eyeShape} />
-            <SelectInput className="col-span-2 md:col-span-1" id="face-shape" label="Face Shape" enums={FaceShape} data={faceShape} />
-            <SelectInput className="col-span-2 md:col-span-1" id="gender" label="Gender" enums={Gender} data={gender} />
-            <SelectInput className="col-span-2 md:col-span-1" id="hair-color" label="Hair Color" enums={HairColor} data={hairColor} />
-            <SelectInput className="col-span-2 md:col-span-1" id="hair-length" label="Hair Length" enums={HairLength} data={hairLength} />
-            <SelectInput className="col-span-2 md:col-span-1" id="height" label="Height" enums={Height} data={height} />
-            <SelectInput className="col-span-2 md:col-span-1" id="skin-tone" label="Skin Tone" enums={SkinTone} data={skinTone} />
-            <SelectInput className="col-span-2 md:col-span-1" id="style" label="Style" enums={Style} data={style} />
-          </div>
-        </Editor>
+      <div className="grid col-span-12 lg:col-span-8 gap-4">
+        <div>
+          <Editor influencerId={id} title="Personality" description={personalityDescription} action={updatePersonality}>
+            <ToggleList id="tone" label="Tone" enums={Tone} data={influencer.personality.tone} />
+            <ToggleList id="interest" label="Interest" enums={Interest} data={influencer.personality.interest} />
+          </Editor>
+        </div>
+        <div>
+          <Editor influencerId={id} title="Appearance" description={appearanceDescription} action={updateAppearance}>
+            <div className="grid grid-cols-2 gap-2">
+              <ToggleList className="col-span-2" id="face-features" label="Face Features" enums={FaceFeatures} data={faceFeatures} />
+              <SelectInput className="col-span-2 md:col-span-1" id="body-build" label="Body Build" enums={BodyBuild} data={bodyBuild} />
+              <SelectInput className="col-span-2 md:col-span-1" id="eye-color" label="Eye Color" enums={EyeColor} data={eyeColor} />
+              <SelectInput className="col-span-2 md:col-span-1" id="eye-shape" label="Eye Shape" enums={EyeShape} data={eyeShape} />
+              <SelectInput className="col-span-2 md:col-span-1" id="face-shape" label="Face Shape" enums={FaceShape} data={faceShape} />
+              <SelectInput className="col-span-2 md:col-span-1" id="gender" label="Gender" enums={Gender} data={gender} />
+              <SelectInput className="col-span-2 md:col-span-1" id="hair-color" label="Hair Color" enums={HairColor} data={hairColor} />
+              <SelectInput className="col-span-2 md:col-span-1" id="hair-length" label="Hair Length" enums={HairLength} data={hairLength} />
+              <SelectInput className="col-span-2 md:col-span-1" id="height" label="Height" enums={Height} data={height} />
+              <SelectInput className="col-span-2 md:col-span-1" id="skin-tone" label="Skin Tone" enums={SkinTone} data={skinTone} />
+              <SelectInput className="col-span-2 md:col-span-1" id="style" label="Style" enums={Style} data={style} />
+            </div>
+          </Editor>
+        </div>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export function SubmitButton({ children, state, isLoading }: SubmitButtonProps) 
 
   return (
     <>
-      <div className="grid w-full items-center gap-4">
+      <div className="grid w-full gap-4">
         <Button type="submit" disabled={pending}>
           {children}
         </Button>
