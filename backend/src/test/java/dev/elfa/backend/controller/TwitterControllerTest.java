@@ -80,7 +80,7 @@ class TwitterControllerTest {
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("1000", "name", "username", auth);
-        Influencer influencer = new Influencer("1000", twitter, personality, appearance);
+        Influencer influencer = new Influencer("1000", twitter, personality, appearance, null);
 
         when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(influencer);
 
@@ -126,7 +126,7 @@ class TwitterControllerTest {
     void updateTwitter_ValidRequest_ReturnsAcceptedStatus() throws Exception {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("1000", "name", "username", auth);
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1000", twitter, null, null)));
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1000", twitter, null, null, null)));
 
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
@@ -159,7 +159,7 @@ class TwitterControllerTest {
         Twitter twitter = new Twitter("1000", "name", "username", auth);
         Personality personality = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.FINANCE));
 
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1000", twitter, personality, null)));
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1000", twitter, personality, null, null)));
         when(mockOllamaService.createTweet(personality)).thenReturn("Are you excited for the weekend?");
         when(mockTweetsRepo.save(any(Tweet.class))).thenReturn(null);
 

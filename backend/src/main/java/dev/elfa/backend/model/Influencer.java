@@ -1,6 +1,7 @@
 package dev.elfa.backend.model;
 
 import dev.elfa.backend.model.appearance.Appearance;
+import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class Influencer {
     private Twitter twitter;
     private Personality personality;
     private Appearance appearance;
+    private Image image;
 
     public Influencer(Twitter twitter) {
         this.twitter = twitter;

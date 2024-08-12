@@ -54,7 +54,7 @@ class StabilityServiceTest {
 
 
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
-        Influencer influencer = new Influencer("1000", null, null, appearance);
+        Influencer influencer = new Influencer("1000", null, null, appearance, null);
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(influencer));
 
@@ -80,7 +80,7 @@ class StabilityServiceTest {
         );
 
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
-        Influencer influencer = new Influencer("1000", null, null, appearance);
+        Influencer influencer = new Influencer("1000", null, null, appearance, null);
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(influencer));
 

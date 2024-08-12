@@ -160,7 +160,7 @@ class TwitterServiceTest {
     void tweetText_ValidId_ReturnsTweet() {
         Twitter twitter = new Twitter("1000", "name", "username", new Auth(true, "accessToken", "refreshToken", LocalDateTime.now().plusHours(1)));
         Personality personality = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART));
-        Influencer influencer = new Influencer("1000", twitter, personality, null);
+        Influencer influencer = new Influencer("1000", twitter, personality, null, null);
         when(mockOllamaService.createTweet(influencer.getPersonality())).thenReturn("Are you excited for the weekend?");
 
         Tweet tweet = new Tweet("100200300400500", "Are you excited for the weekend?", "https://x.com/username/status/100200300400500", LocalDateTime.now());
