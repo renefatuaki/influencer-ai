@@ -51,7 +51,7 @@ export async function DELETE(path: string, headers?: HeadersInit) {
     },
   });
 
-  return parseResponse(response);
+  return await parseResponse(response);
 }
 
 export async function PUT(path: string, body: object, headers?: HeadersInit) {
@@ -66,7 +66,7 @@ export async function PUT(path: string, body: object, headers?: HeadersInit) {
     body: JSON.stringify(body),
   });
 
-  return parseResponse(response);
+  return await parseResponse(response);
 }
 
 export async function PATCH(path: string, body: object, headers?: HeadersInit) {
@@ -81,5 +81,5 @@ export async function PATCH(path: string, body: object, headers?: HeadersInit) {
     body: JSON.stringify(body),
   });
 
-  return parseResponse(response);
+  return await parseResponse(response);
 }
