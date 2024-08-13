@@ -1,6 +1,5 @@
 package dev.elfa.backend.service;
 
-import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.repository.InfluencerRepo;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 public class StabilityService {
     private final RestClient restClient;
     private final String apiKey;
-    private final InfluencerRepo influencerRepo;
     private final MediaType webp = new MediaType("image", "webp");
 
     public StabilityService(
@@ -33,8 +31,7 @@ public class StabilityService {
         this.influencerRepo = influencerRepo;
     }
 
-    private String getAppearancePrompt(Influencer influencer) {
-        Appearance appearance = influencer.getAppearance();
+    public static String getAppearancePrompt(Appearance appearance) {
         String faceFeatures = appearance.faceFeatures().stream().map(Enum::name).collect(Collectors.joining(", ")).toLowerCase();
 
         return String.format("""
@@ -55,30 +52,26 @@ public class StabilityService {
         );
     }
 
-    public Optional<byte[]> createInfluencerImage(String id) {
-        return influencerRepo.findById(id).map(influencer -> {
-            String prompt = getAppearancePrompt(influencer);
+    public Optional<byte[]> createInfluencerImage(String prompt) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiKey);
+        headers.setAccept(List.of(webp));
+        headers.set("Accept", "image/*");
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(apiKey);
-            headers.setAccept(List.of(webp));
-            headers.set("Accept", "image/*");
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("prompt", prompt);
+        requestBody.add("style_preset", "photographic");
+        requestBody.add("output_format", "webp");
+        requestBody.add("aspect_ratio", "1:1");
 
-            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-            requestBody.add("prompt", prompt);
-            requestBody.add("style_preset", "photographic");
-            requestBody.add("output_format", "webp");
-            requestBody.add("aspect_ratio", "1:1");
+        ResponseEntity<byte[]> response = restClient.post()
+                .uri("/stable-image/generate/core")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(requestBody)
+                .retrieve()
+                .toEntity(byte[].class);
 
-            ResponseEntity<byte[]> response = restClient.post()
-                    .uri("/stable-image/generate/core")
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .headers(httpHeaders -> httpHeaders.addAll(headers))
-                    .body(requestBody)
-                    .retrieve()
-                    .toEntity(byte[].class);
-
-            return response.getBody();
-        });
+        return Optional.ofNullable(response.getBody());
     }
 }
