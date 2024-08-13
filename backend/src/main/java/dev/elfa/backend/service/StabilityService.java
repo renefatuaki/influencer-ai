@@ -22,7 +22,7 @@ public class StabilityService {
 
     public StabilityService(
             @Value("${STABILITY_AI_API_KEY}") String apiKey,
-            @Value("${STABILITY_AI_URL}") String baseUrl,
+            @Value("${STABILITY_AI_URL}") String baseUrl
     ) {
         this.apiKey = apiKey;
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
