@@ -1,7 +1,6 @@
 package dev.elfa.backend.service;
 
 import dev.elfa.backend.model.appearance.Appearance;
-import dev.elfa.backend.repository.InfluencerRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,11 +23,9 @@ public class StabilityService {
     public StabilityService(
             @Value("${STABILITY_AI_API_KEY}") String apiKey,
             @Value("${STABILITY_AI_URL}") String baseUrl,
-            InfluencerRepo influencerRepo
     ) {
         this.apiKey = apiKey;
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
-        this.influencerRepo = influencerRepo;
     }
 
     public static String getAppearancePrompt(Appearance appearance) {
