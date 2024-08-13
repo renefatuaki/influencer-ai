@@ -10,6 +10,7 @@ import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.auth.Auth;
+import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
@@ -127,7 +128,8 @@ public class TwitterService {
         Twitter twitter = new Twitter(account.id(), account.name(), account.username(), auth);
         Personality personality = new Personality(Set.of(), Set.of());
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
-        Influencer influencer = new Influencer(account.id(), twitter, personality, appearance);
+        Image image = new Image(null, null);
+        Influencer influencer = new Influencer(account.id(), twitter, personality, appearance, image);
         return influencerRepo.save(influencer);
     }
 
@@ -138,7 +140,7 @@ public class TwitterService {
 
         return this.getAccountData(auth.getAccessToken()).map(accountData -> {
             Twitter updatedTwitter = new Twitter(accountData.id(), accountData.name(), accountData.username(), auth);
-            Influencer updatedInfluencer = new Influencer(influencer.getId(), updatedTwitter, influencer.getPersonality(), influencer.getAppearance());
+            Influencer updatedInfluencer = new Influencer(influencer.getId(), updatedTwitter, influencer.getPersonality(), influencer.getAppearance(), null);
             influencerRepo.save(updatedInfluencer);
 
             return updatedInfluencer;
