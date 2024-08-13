@@ -3,9 +3,11 @@ package dev.elfa.backend.service;
 import dev.elfa.backend.dto.AuthDto;
 import dev.elfa.backend.dto.InfluencerDto;
 import dev.elfa.backend.dto.TwitterDto;
+import dev.elfa.backend.model.FileMetadata;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.appearance.Appearance;
+import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +71,14 @@ public class InfluencerService {
             influencerRepo.save(influencer);
 
             return influencer.getAppearance();
+        });
+    }
+
+    public void saveBaseImage(FileMetadata fileMetadata) {
+        influencerRepo.findById(fileMetadata.getTwitterId()).ifPresent(influencer -> {
+            Image image = influencer.getImage().withBaseImage(fileMetadata.getId());
+            influencer.setImage(image);
+            influencerRepo.save(influencer);
         });
     }
 }
