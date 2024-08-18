@@ -6,7 +6,7 @@ import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.FileMetadata;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Scheduler;
-import dev.elfa.backend.model.TwitterModel;
+import dev.elfa.backend.model.Twitter;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
@@ -40,7 +40,7 @@ public class InfluencerService {
         AuthDto authDto = new AuthDto(twitter.auth().isAuthorized());
         TwitterDto twitterDto = new TwitterDto(twitter.id(), twitter.name(), twitter.username(), authDto);
 
-        return new InfluencerDto(influencer.getId(), twitterDto, influencer.getPersonality(), influencer.getAppearance());
+        return new InfluencerDto(influencer.getId(), twitterDto, influencer.getPersonality(), influencer.getAppearance(), influencer.getScheduler());
     }
 
     public Optional<Influencer> getInfluencer(String id) {
@@ -76,7 +76,7 @@ public class InfluencerService {
     }
 
     public void saveBaseImage(FileMetadata fileMetadata) {
-        influencerRepo.findById(fileMetadata.getTwitterId()).ifPresent(influencer -> {
+        influencerRepo.findById(fileMetadata.getAccountId()).ifPresent(influencer -> {
             Image image = influencer.getImage().withBaseImage(fileMetadata.getId());
             influencer.setImage(image);
             influencerRepo.save(influencer);
