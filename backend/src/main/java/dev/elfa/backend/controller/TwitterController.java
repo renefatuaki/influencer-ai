@@ -72,10 +72,63 @@ public class TwitterController {
         }
     }
 
+    @PostMapping("/tweet/{id}/image")
+    public ResponseEntity<String> tweetImage(@PathVariable String id) throws IOException {
+        Optional<Influencer> influencerOptional = influencerService.getInfluencer(id);
+        if (influencerOptional.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        Influencer influencer = influencerOptional.get();
+        String tweetText = ollamaService.createTweet(influencer.getPersonality());
+        String promptStabilityAi = StabilityService.getTweetPrompt(tweetText);
+        Optional<Resource> optionalImage = stabilityService.createImage(promptStabilityAi);
+        if (optionalImage.isEmpty()) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        Resource image = optionalImage.get();
+        FileMetadata fileMetadata = gridFsService.saveImage(image, influencer.getId());
+        twitterService.saveDraftTweet(tweetText, fileMetadata.getId(), influencer.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Tweet with image was successfully created and waiting for approval.");
+    }
+
     @GetMapping("/tweets")
     public ResponseEntity<List<Tweet>> getTweets() {
         List<Tweet> tweets = twitterService.getTweets();
 
         return ResponseEntity.status(HttpStatus.OK).body(tweets);
+    }
+
+    @GetMapping("/unapproved/tweets")
+    public ResponseEntity<List<Tweet>> getUnapprovedTweets() {
+        List<Tweet> tweets = twitterService.getUnapprovedTweets();
+
+        return ResponseEntity.status(HttpStatus.OK).body(tweets);
+    }
+
+    @PutMapping("/tweet/{id}/approve")
+    public ResponseEntity<Tweet> approveTweet(@PathVariable String id) {
+        Optional<Tweet> optionalTweet = twitterService.getTweet(id);
+        if (optionalTweet.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Tweet tweet = optionalTweet.get();
+        Resource image = gridFsService.getResource(tweet.getImageId());
+        String mediaId = twitterService.uploadImage(tweet.getInfluencerId(), image);
+
+        try {
+            Optional<Tweet> tweetData = twitterService.postTweet(tweet, mediaId);
+
+            return tweetData
+                    .map(data -> ResponseEntity.status(HttpStatus.OK).body(data))
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.CONFLICT).build());
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(null);
+        }
+    }
+
+    @GetMapping("/tweet/image/{id}")
+    public ResponseEntity<Resource> getTweetImage(@PathVariable String id) {
+        Resource image = gridFsService.getResource(id);
+
+        return ResponseEntity.ok()
+                .contentType(new org.springframework.http.MediaType("image", "webp"))
+                .body(image);
     }
 }

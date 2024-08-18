@@ -17,5 +17,9 @@ public class Tweet {
     private String id;
     private String text;
     private String link;
+    private String tweetId;
+    private String imageId;
+    private String influencerId;
     private LocalDateTime createdAt;
+    private boolean approved;
 }

@@ -12,6 +12,5 @@ public class FileMetadata {
     private String name;
     private String contentType;
     private long size;
-    private String twitterId;
-    private boolean approved;
+    private String accountId;
 }

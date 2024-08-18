@@ -3,38 +3,47 @@ package dev.elfa.backend.service;
 import dev.elfa.backend.dto.auth.AuthenticationResponse;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
 import dev.elfa.backend.dto.auth.TwitterAccountResponse;
+import dev.elfa.backend.dto.twitter.Media;
 import dev.elfa.backend.dto.twitter.TweetRequestBody;
+import dev.elfa.backend.dto.twitter.TweetRequestMediaBody;
 import dev.elfa.backend.dto.twitter.TweetResponse;
-import dev.elfa.backend.model.Influencer;
-import dev.elfa.backend.model.Tweet;
-import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.*;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.auth.Auth;
 import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
+import dev.elfa.backend.util.OAuth1HeaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class TwitterService {
+    private static final String MEDIA_URL = "https://upload.twitter.com/1.1/media/upload.json";
+
     private final RestClient restClient;
     private final String redirectUri;
     private final String clientId;
     private final String clientPassword;
+    private final String accessToken;
+    private final String accessTokenSecret;
+    private final String consumerKey;
+    private final String consumerSecret;
     private final InfluencerRepo influencerRepo;
     private final TweetsRepo tweetsRepo;
     private final OllamaService ollamaService;
@@ -43,6 +52,10 @@ public class TwitterService {
             @Value("${X_URL}") String baseUrl,
             @Value("${X_CLIENT_ID}") String clientId,
             @Value("${X_CLIENT_PW}") String clientPassword,
+            @Value("${X_ACCESS_TOKEN}") String accessToken,
+            @Value("${X_ACCESS_TOKEN_SECRET}") String accessTokenSecret,
+            @Value("${X_CONSUMER_KEY}") String consumerKey,
+            @Value("${X_CONSUMER_SECRET}") String consumerSecret,
             @Value("${X_REDIRECT_URI}") String redirectUri,
             InfluencerRepo influencerRepo,
             TweetsRepo tweetsRepo,
@@ -51,6 +64,10 @@ public class TwitterService {
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
         this.clientId = clientId;
         this.clientPassword = clientPassword;
+        this.accessToken = accessToken;
+        this.accessTokenSecret = accessTokenSecret;
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
         this.redirectUri = redirectUri;
         this.influencerRepo = influencerRepo;
         this.tweetsRepo = tweetsRepo;
@@ -129,7 +146,8 @@ public class TwitterService {
         Personality personality = new Personality(Set.of(), Set.of());
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
         Image image = new Image(null, null);
-        Influencer influencer = new Influencer(account.id(), twitter, personality, appearance, image);
+        Scheduler scheduler = new Scheduler(null, Set.of());
+        Influencer influencer = new Influencer(account.id(), twitter, personality, appearance, image, scheduler);
         return influencerRepo.save(influencer);
     }
 
@@ -140,10 +158,10 @@ public class TwitterService {
 
         return this.getAccountData(auth.getAccessToken()).map(accountData -> {
             Twitter updatedTwitter = new Twitter(accountData.id(), accountData.name(), accountData.username(), auth);
-            Influencer updatedInfluencer = new Influencer(influencer.getId(), updatedTwitter, influencer.getPersonality(), influencer.getAppearance(), null);
-            influencerRepo.save(updatedInfluencer);
+            influencer.setTwitter(updatedTwitter);
+            influencerRepo.save(influencer);
 
-            return updatedInfluencer;
+            return influencer;
         });
     }
 
@@ -166,7 +184,7 @@ public class TwitterService {
 
         return Optional.ofNullable(response.getBody()).map(tweet -> {
             String link = String.format("https://x.com/%s/status/%s", influencer.getTwitter().id(), tweet.data().id());
-            Tweet newTweet = new Tweet(tweet.data().id(), tweet.data().text(), link, LocalDateTime.now());
+            Tweet newTweet = new Tweet(tweet.data().id(), tweet.data().text(), link, null, null, influencer.getId(), LocalDateTime.now(), true);
             tweetsRepo.save(newTweet);
             return newTweet;
         });
@@ -174,5 +192,86 @@ public class TwitterService {
 
     public List<Tweet> getTweets() {
         return tweetsRepo.findAll();
+        return tweetsRepo.findAllByApprovedEquals(true);
+    }
+
+    public List<Tweet> getUnapprovedTweets() {
+        return tweetsRepo.findAllByApprovedEquals(false);
+    }
+
+    public void saveDraftTweet(String tweetText, String imageId, String influencerId) {
+        tweetsRepo.save(new Tweet(null, tweetText, null, null, imageId, influencerId, null, false));
+    }
+
+    public Optional<Tweet> getTweet(String id) {
+        return tweetsRepo.findById(id);
+    }
+
+    public String uploadImage(String influencerId, Resource image) {
+        RestClient client = RestClient.builder().baseUrl(MEDIA_URL).build();
+
+        String authorization = new OAuth1HeaderBuilder()
+                .withMethod("POST")
+                .withURL(MEDIA_URL)
+                .withConsumerSecret(consumerSecret)
+                .withTokenSecret(accessTokenSecret)
+                .withParameter("oauth_consumer_key", consumerKey)
+                .withParameter("oauth_token", accessToken)
+                .withURLQueryParameter("additional_owners=" + influencerId)
+                .build();
+
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+        builder.part("media", image);
+        MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", authorization);
+
+        ResponseEntity<TwitterUploadResponse> response = client.post()
+                .uri(uriBuilder -> uriBuilder
+                        .queryParam("additional_owners", influencerId)
+                        .build())
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(multipartBody)
+                .retrieve()
+                .toEntity(TwitterUploadResponse.class);
+
+        TwitterUploadResponse twitterUploadResponse = response.getBody();
+
+        if (twitterUploadResponse == null) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload image");
+
+        return twitterUploadResponse.mediaId();
+    }
+
+    public Optional<Tweet> postTweet(Tweet tweet, String mediaId) {
+        Optional<Influencer> optionalInfluencer = influencerRepo.findById(tweet.getInfluencerId());
+
+        if (optionalInfluencer.isEmpty()) throw new ResponseStatusException(HttpStatus.CONFLICT, "Influencer not found");
+
+        Influencer influencer = optionalInfluencer.get();
+        Auth auth = influencer.getTwitter().auth();
+
+        if (isTokenExpired(auth)) refreshAuthToken(auth);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(auth.getAccessToken());
+
+        ResponseEntity<TweetResponse> response = restClient.post()
+                .uri("/tweets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(new TweetRequestMediaBody(tweet.getText(), new Media(new String[]{mediaId})))
+                .retrieve()
+                .toEntity(TweetResponse.class);
+
+        return Optional.ofNullable(response.getBody()).map(updatedTweet -> {
+            String link = String.format("https://x.com/%s/status/%s", influencer.getTwitter().id(), updatedTweet.data().id());
+            tweet.setTweetId(updatedTweet.data().id());
+            tweet.setApproved(true);
+            tweet.setCreatedAt(LocalDateTime.now());
+            tweet.setLink(link);
+
+            return tweetsRepo.save(tweet);
+        });
     }
 }
