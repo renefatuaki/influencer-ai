@@ -18,9 +18,9 @@ export default function TwitterAuth({ url }: { url: string }) {
   const router = useRouter();
 
   const clickHandler = async () => {
-    const { data } = await POST('/twitter', { code, state });
+    const { status, data } = await POST('/twitter', { code, state });
 
-    if (!data) {
+    if (status > 299) {
       setMessage(data.message);
       setError(true);
     } else {
@@ -49,9 +49,7 @@ export default function TwitterAuth({ url }: { url: string }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Connect Twitter Account</DialogTitle>
-            <DialogDescription>
-              This action will permanently add your Twitter account to our servers and cannot be undone.
-            </DialogDescription>
+            <DialogDescription>This action will permanently add your Twitter account to our servers and cannot be undone.</DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-wrap gap-4">
             {error ? (
