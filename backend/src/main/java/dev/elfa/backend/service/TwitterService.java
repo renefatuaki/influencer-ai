@@ -191,12 +191,19 @@ public class TwitterService {
     }
 
     public List<Tweet> getTweets() {
-        return tweetsRepo.findAll();
         return tweetsRepo.findAllByApprovedEquals(true);
     }
 
     public List<Tweet> getUnapprovedTweets() {
         return tweetsRepo.findAllByApprovedEquals(false);
+    }
+
+    public void postScheduledTweet() {
+        List<Influencer> influencers = influencerRepo.findBySchedulerScheduledTimeBetween(LocalTime.now(), LocalTime.now().plusMinutes(15));
+
+        for (Influencer influencer : influencers) {
+            tweetText(influencer);
+        }
     }
 
     public void saveDraftTweet(String tweetText, String imageId, String influencerId) {
