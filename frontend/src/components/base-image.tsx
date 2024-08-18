@@ -7,7 +7,7 @@ import { updateTwitterBaseImage } from '@/actions';
 import Loading from '@/components/loading';
 
 export default function BaseImage({ twitterId }: Readonly<{ twitterId: string }>) {
-  const url = `${process.env.NEXT_PUBLIC_API}/stability/base-image/${twitterId}`;
+  const url = `${process.env.NEXT_PUBLIC_API}/stability/influencer/${twitterId}/base-image`;
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState(`${url}?${Date.now()}`);
 
