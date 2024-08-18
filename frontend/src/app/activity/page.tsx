@@ -2,10 +2,10 @@ import { GET } from '@/lib/fetch';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import Activity from '@/components/activity';
-import { ActivityProps } from '@/types';
+import { Tweet } from '@/types';
 
 async function Activities() {
-  const tweets: ActivityProps[] = await GET('/twitter/tweets', 'no-cache');
+  const tweets: Tweet[] = await GET('/twitter/tweets', 'no-cache');
 
   if (!tweets) notFound();
 
