@@ -1,11 +1,5 @@
 import Link from 'next/link';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from '@/components/ui/navigation-menu';
 
 type NavigationItem = {
   title: string;
@@ -14,10 +8,6 @@ type NavigationItem = {
 
 export default function Navigation() {
   const components: NavigationItem[] = [
-    {
-      title: 'Dashboard',
-      href: '/dashboard',
-    },
     {
       title: 'Bot Management',
       href: '/management',
@@ -30,15 +20,11 @@ export default function Navigation() {
       title: 'Activity Log',
       href: '/activity',
     },
-    {
-      title: 'Settings',
-      href: '/settings',
-    },
   ];
 
   return (
     <>
-      <NavigationMenu className="my-4">
+      <NavigationMenu className="my-4 flex ">
         <NavigationMenuList>
           {components.map(({ title, href }: NavigationItem) => (
             <NavigationMenuItem key={title}>
@@ -49,6 +35,7 @@ export default function Navigation() {
           ))}
         </NavigationMenuList>
       </NavigationMenu>
+      <h1 className="font-mono font-bold text-lg">Influencer AI</h1>
     </>
   );
 }
