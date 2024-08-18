@@ -40,7 +40,7 @@ class StabilityServiceTest {
     }
 
     @Test
-    void createInfluencerImage_ValidId_ReturnsImage() {
+    void createImage_ValidId_ReturnsImage() {
         byte[] image = new byte[]{1, 2, 3};
 
         try (Buffer buffer = new Buffer().write(image)) {
@@ -54,37 +54,28 @@ class StabilityServiceTest {
 
 
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
-        Influencer influencer = new Influencer("1000", null, null, appearance, null);
+        Influencer influencer = new Influencer("1000", null, null, appearance, null, null);
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(influencer));
 
-        Optional<byte[]> result = stabilityService.createInfluencerImage("1000");
+        Optional<byte[]> result = stabilityService.createImage("1000");
 
         assertTrue(result.isPresent());
         assertArrayEquals(image, result.get());
     }
 
     @Test
-    void createInfluencerImage_InvalidId_ReturnsEmpty() {
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
-
-        Optional<byte[]> result = stabilityService.createInfluencerImage("1000");
-
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void createInfluencerImage_ApiResponseIsNull_ReturnsEmpty() {
+    void createImage_ApiResponseIsNull_ReturnsEmpty() {
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "image/webp")
         );
 
         Appearance appearance = new Appearance(null, null, null, Set.of(), null, null, null, null, null, null, null);
-        Influencer influencer = new Influencer("1000", null, null, appearance, null);
+        Influencer influencer = new Influencer("1000", null, null, appearance, null, null);
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(influencer));
 
-        Optional<byte[]> result = stabilityService.createInfluencerImage("1000");
+        Optional<Resource> result = stabilityService.createImage("1000");
 
         assertFalse(result.isPresent());
     }

@@ -2,6 +2,7 @@ package dev.elfa.backend.service;
 
 import dev.elfa.backend.model.appearance.Appearance;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,11 @@ public class StabilityService {
         );
     }
 
-    public Optional<byte[]> createInfluencerImage(String prompt) {
+    public static String getTweetPrompt(String tweet) {
+        return String.format("Create a realistic image for this twitter post: %s. Do not include any person in the image.", tweet);
+    }
+
+    public Optional<Resource> createImage(String prompt) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
         headers.setAccept(List.of(webp));
@@ -61,13 +66,13 @@ public class StabilityService {
         requestBody.add("output_format", "webp");
         requestBody.add("aspect_ratio", "1:1");
 
-        ResponseEntity<byte[]> response = restClient.post()
+        ResponseEntity<Resource> response = restClient.post()
                 .uri("/stable-image/generate/core")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .body(requestBody)
                 .retrieve()
-                .toEntity(byte[].class);
+                .toEntity(Resource.class);
 
         return Optional.ofNullable(response.getBody());
     }

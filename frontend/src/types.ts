@@ -200,13 +200,6 @@ export type Appearance = {
   eyeColor?: EyeColor;
   eyeShape?: EyeShape;
   faceFeatures: FaceFeatures[];
-  faceShape: FaceShape;
-  gender: Gender;
-  hairColor: HairColor;
-  hairLength: HairLength;
-  height: Height;
-  skinTone: SkinTone;
-  style: Style;
   faceShape?: FaceShape;
   gender?: Gender;
   hairColor?: HairColor;
@@ -214,6 +207,11 @@ export type Appearance = {
   height?: Height;
   skinTone?: SkinTone;
   style?: Style;
+};
+
+export type Image = {
+  baseImage?: string;
+  images?: string[];
 };
 
 export enum WeekDays {
@@ -228,6 +226,7 @@ export enum WeekDays {
 
 export type Scheduler = {
   scheduledTime?: string;
+  scheduledDays: WeekDays[];
 };
 
 export type Influencer = {

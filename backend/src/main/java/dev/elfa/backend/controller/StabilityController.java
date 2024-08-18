@@ -7,6 +7,7 @@ import dev.elfa.backend.service.InfluencerService;
 import dev.elfa.backend.service.StabilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,16 +37,17 @@ public class StabilityController {
     }
 
     @PutMapping("/influencer/{id}/base-image")
-    ResponseEntity<byte[]> createInfluencerImage(@PathVariable String id) {
+    ResponseEntity<Resource> createInfluencerImage(@PathVariable String id) throws IOException {
         Optional<Influencer> optionalInfluencer = influencerService.getInfluencer(id);
         if (optionalInfluencer.isEmpty()) return ResponseEntity.notFound().build();
 
         Influencer influencer = optionalInfluencer.get();
         String prompt = getAppearancePrompt(influencer.getAppearance());
-        Optional<byte[]> optionalImage = stabilityService.createInfluencerImage(prompt);
+        Optional<Resource> optionalImage = stabilityService.createImage(prompt);
         if (optionalImage.isEmpty()) return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
-        byte[] image = optionalImage.get();
+        Resource image = optionalImage.get();
+
         FileMetadata fileMetadata = gridFsService.saveBaseImage(image, influencer.getId());
         influencerService.saveBaseImage(fileMetadata);
 
