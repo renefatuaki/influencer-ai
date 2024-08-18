@@ -234,6 +234,8 @@ export type Influencer = {
   twitter: Twitter;
   personality: Personality;
   appearance: Appearance;
+  image: Image;
+  scheduler: Scheduler;
 };
 
 export type Pagination = {
@@ -270,4 +272,26 @@ export type ActivityProps = {
   text: string;
   link: string;
   createdAt: string;
+};
+
+export type UnapprovedTweet = {
+  id: string;
+  text: string;
+  link: string | null;
+  tweetId: string | null;
+  imageId: string;
+  influencerId: string;
+  createdAt: string | null;
+  approved: boolean;
+};
+
+export type Tweet = {
+  id: string;
+  text: string;
+  link: string;
+  tweetId: string;
+  imageId: string;
+  influencerId: string;
+  createdAt: string;
+  approved: boolean;
 };
