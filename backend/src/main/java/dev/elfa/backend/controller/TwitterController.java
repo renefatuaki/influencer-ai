@@ -4,17 +4,19 @@ import dev.elfa.backend.dto.InfluencerDto;
 import dev.elfa.backend.dto.ResponseWrapper;
 import dev.elfa.backend.dto.auth.AuthorizationRequestBody;
 import dev.elfa.backend.dto.auth.TwitterAccountData;
+import dev.elfa.backend.model.FileMetadata;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Tweet;
 import dev.elfa.backend.model.auth.Auth;
-import dev.elfa.backend.service.InfluencerService;
-import dev.elfa.backend.service.TwitterService;
+import dev.elfa.backend.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,9 +26,12 @@ import java.util.Optional;
 public class TwitterController {
     private final TwitterService twitterService;
     private final InfluencerService influencerService;
+    private final OllamaService ollamaService;
+    private final StabilityService stabilityService;
+    private final GridFsService gridFsService;
 
     @PostMapping
-    public ResponseEntity<ResponseWrapper<InfluencerDto>> addTwitter(@RequestBody AuthorizationRequestBody authorizationRequestBody) {
+    public ResponseEntity<ResponseWrapper<InfluencerDto>> addTwitterAccount(@RequestBody AuthorizationRequestBody authorizationRequestBody) {
         Auth auth = twitterService.getAuthToken(authorizationRequestBody.code());
 
         if (!auth.isAuthorized()) return ResponseEntity
@@ -45,7 +50,7 @@ public class TwitterController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateTwitter(@PathVariable String id) {
+    public ResponseEntity<Void> updateTwitterAccount(@PathVariable String id) {
         Optional<Influencer> influencer = influencerService.getInfluencer(id);
 
         if (influencer.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
