@@ -7,12 +7,12 @@ type SelectInputProps<T extends object> = {
   id: string;
   label: string;
   enums: T;
-  data: string;
+  data: string | undefined;
 };
 
 export default function SelectInput<T extends object>({ className, id, label, enums, data }: SelectInputProps<T>) {
   const options: string[] = Object.keys(enums);
-  const [selectedOption, setSelectedOption] = useState<string>(data);
+  const [selectedOption, setSelectedOption] = useState<string>(data ?? '');
 
   return (
     <div className={`flex flex-col gap-2 my-2 ${className}`}>
