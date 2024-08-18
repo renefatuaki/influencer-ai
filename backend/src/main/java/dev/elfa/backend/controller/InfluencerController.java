@@ -1,6 +1,7 @@
 package dev.elfa.backend.controller;
 
 import dev.elfa.backend.dto.InfluencerDto;
+import dev.elfa.backend.model.Scheduler;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.service.InfluencerService;
@@ -67,6 +68,15 @@ public class InfluencerController {
 
         return updatedAppearance
                 .map(appearance -> ResponseEntity.status(HttpStatus.ACCEPTED).body(appearance))
+                .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
+    }
+
+    @PutMapping("/{id}/scheduler")
+    public ResponseEntity<Scheduler> updateInfluencerScheduler(@PathVariable String id, @RequestBody Scheduler schedulerRequestBody) {
+        Optional<Scheduler> updatedScheduler = influencerService.updateScheduler(id, schedulerRequestBody);
+
+        return updatedScheduler
+                .map(scheduler -> ResponseEntity.status(HttpStatus.ACCEPTED).body(scheduler))
                 .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
     }
 }

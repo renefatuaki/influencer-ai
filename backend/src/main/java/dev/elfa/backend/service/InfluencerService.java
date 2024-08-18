@@ -6,6 +6,7 @@ import dev.elfa.backend.dto.TwitterDto;
 import dev.elfa.backend.model.FileMetadata;
 import dev.elfa.backend.model.Influencer;
 import dev.elfa.backend.model.Twitter;
+import dev.elfa.backend.model.Scheduler;
 import dev.elfa.backend.model.appearance.Appearance;
 import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
@@ -79,6 +80,15 @@ public class InfluencerService {
             Image image = influencer.getImage().withBaseImage(fileMetadata.getId());
             influencer.setImage(image);
             influencerRepo.save(influencer);
+        });
+    }
+
+    public Optional<Scheduler> updateScheduler(String id, Scheduler scheduler) {
+        return influencerRepo.findById(id).map(influencer -> {
+            influencer.setScheduler(scheduler);
+            influencerRepo.save(influencer);
+
+            return influencer.getScheduler();
         });
     }
 }

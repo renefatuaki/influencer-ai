@@ -20,6 +20,7 @@ public class Influencer {
     private Personality personality;
     private Appearance appearance;
     private Image image;
+    private Scheduler scheduler;
 
     public Influencer(Twitter twitter) {
         this.twitter = twitter;

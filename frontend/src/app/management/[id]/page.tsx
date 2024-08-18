@@ -24,7 +24,8 @@ import ToggleList from '@/components/editor/toggle-list';
 import SelectInput from '@/components/editor/select-input';
 import Actions from '@/components/actions';
 import TwitterDetails from '@/components/twitter';
-import BaseImage from '@/base-image';
+import BaseImage from '@/components/base-image';
+import { Scheduler } from '@/components/scheduler';
 
 type ParamsProps = {
   params: {
@@ -60,6 +61,9 @@ export default function InfluencerSettings({ params }: Readonly<ParamsProps>) {
         </div>
         <div className="col-span-12 lg:col-span-4">
           <Actions twitterId={id} />
+        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <Scheduler id={id} time={influencer.scheduler.scheduledTime} days={influencer.scheduler.scheduledDays} />
         </div>
       </div>
       <div className="grid col-span-12 lg:col-span-8 gap-4">

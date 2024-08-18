@@ -1,6 +1,9 @@
 'use server';
 
-import { POST, PUT } from '@/lib/fetch';
+import { GET, POST, PUT } from '@/lib/fetch';
+import { convertToLocalTime } from '@/lib/utils';
+import { revalidatePath } from 'next/cache';
+import { UnapprovedTweet } from '@/types';
 
 const { API } = process.env;
 
@@ -84,11 +87,50 @@ export async function createTwitterTextPost(prevState: any, formData: FormData) 
     return { error: true, message: 'There was an issue creating the Twitter text post. Please try again later.' };
   }
 
-  const { text, link } = response.data;
+  const { text, link } = response;
 
   return { error: false, message: `Twitter text post created successfully! Twitter post: ${text}`, link: link };
 }
 
 export async function updateTwitterBaseImage(id: string) {
-  await fetch(`${process.env.API}/stability/base-image/${id}`, { method: 'PUT' });
+  await fetch(`${process.env.API}/stability/influencer/${id}/base-image`, { method: 'PUT' });
+}
+
+export type SchedulerData = {
+  hour: string;
+  minute: string;
+  meridiem: string;
+  workDays: string[];
+};
+
+export async function updateScheduler(id: string, data: SchedulerData) {
+  const time = convertToLocalTime(data);
+  const response = await PUT(`/influencer/${id}/scheduler`, {
+    scheduledTime: time.toString(),
+    scheduledDays: data.workDays,
+  });
+
+  return response.status >= 300
+    ? { error: true, message: 'There was an issue updating the scheduler. Please try again later.' }
+    : { error: false, message: `Scheduler updated successfully!` };
+}
+
+export async function getUnapprovedTweet(): Promise<UnapprovedTweet[]> {
+  return await GET('/twitter/unapproved/tweets', 'no-cache');
+}
+
+export async function retryImageGeneration(id: string) {
+  const response = await PUT(`/twitter/tweet/${id}/retry`, {});
+
+  revalidatePath('/approval', 'page');
+
+  return response;
+}
+
+export async function approveTweet(id: string) {
+  const response = await PUT(`/twitter/tweet/${id}/approve`, {});
+
+  revalidatePath('/approval', 'page');
+
+  return response;
 }
