@@ -93,8 +93,8 @@ public class TwitterService {
                 .retrieve()
                 .toEntity(AuthenticationResponse.class);
 
-        if (!response.getStatusCode().isError() && response.getBody() != null) {
-            AuthenticationResponse entityBody = response.getBody();
+        AuthenticationResponse entityBody = response.getBody();
+        if (!response.getStatusCode().isError() && entityBody != null) {
             LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(entityBody.expires_in());
             return new Auth(true, entityBody.access_token(), entityBody.refresh_token(), expiresAt);
         }
@@ -123,8 +123,8 @@ public class TwitterService {
                 .retrieve()
                 .toEntity(AuthenticationResponse.class);
 
-        if (!response.getStatusCode().isError() && response.getBody() != null) {
-            AuthenticationResponse entityBody = response.getBody();
+        AuthenticationResponse entityBody = response.getBody();
+        if (!response.getStatusCode().isError() && entityBody != null) {
             auth.setAccessToken(entityBody.access_token());
             auth.setRefreshToken(entityBody.refresh_token());
             auth.setExpiresAt(LocalDateTime.now().plusSeconds(entityBody.expires_in()));
