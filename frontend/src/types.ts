@@ -196,9 +196,9 @@ export type Personality = {
 };
 
 export type Appearance = {
-  bodyBuild: BodyBuild;
-  eyeColor: EyeColor;
-  eyeShape: EyeShape;
+  bodyBuild?: BodyBuild;
+  eyeColor?: EyeColor;
+  eyeShape?: EyeShape;
   faceFeatures: FaceFeatures[];
   faceShape: FaceShape;
   gender: Gender;
@@ -207,6 +207,27 @@ export type Appearance = {
   height: Height;
   skinTone: SkinTone;
   style: Style;
+  faceShape?: FaceShape;
+  gender?: Gender;
+  hairColor?: HairColor;
+  hairLength?: HairLength;
+  height?: Height;
+  skinTone?: SkinTone;
+  style?: Style;
+};
+
+export enum WeekDays {
+  MONDAY = 'MONDAY',
+  TUESDAY = 'TUESDAY',
+  WEDNESDAY = 'WEDNESDAY',
+  THURSDAY = 'THURSDAY',
+  FRIDAY = 'FRIDAY',
+  SATURDAY = 'SATURDAY',
+  SUNDAY = 'SUNDAY',
+}
+
+export type Scheduler = {
+  scheduledTime?: string;
 };
 
 export type Influencer = {
