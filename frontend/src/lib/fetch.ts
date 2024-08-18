@@ -9,7 +9,7 @@ function removeLeadingSlash(path: string) {
 async function parseResponse(response: Response) {
   if (response.status === 204 || response.headers.get('Content-Length') === '0') return { status: response.status };
 
-  return { status: response.status, data: await response.json() };
+  return { status: response.status, ...(await response.json()) };
 }
 
 export async function GET(path: string, cache?: RequestCache, headers?: HeadersInit) {
