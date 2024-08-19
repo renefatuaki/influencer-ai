@@ -102,7 +102,7 @@ class InfluencerControllerTest {
         List<Influencer> influencerList = Arrays.asList(influencer1, influencer2);
         Page<Influencer> influencerPage = new PageImpl<>(influencerList, pageable, influencerList.size());
 
-        when(mockInfluencerRepo.findAll(pageable)).thenReturn(influencerPage);
+        doReturn(influencerPage).when(mockInfluencerRepo).findAll(pageable);
 
         mvc.perform(MockMvcRequestBuilders.get("/api/influencer"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -181,12 +181,17 @@ class InfluencerControllerTest {
 
     @Test
     void updateInfluencerPersonality_ValidRequest_ReturnsAcceptedStatus() throws Exception {
+        // Initialize Auth and Twitter objects
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
+
+        // Mock the repository to return a valid Influencer object
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null, null, null)));
 
-        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
+        // Mock the save method to return a non-null value
+        when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(new Influencer("1", twitter, null, null, null, null));
 
+        // Perform the PUT request and check the response
         mvc.perform(MockMvcRequestBuilders.put("/api/influencer/1/personality")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -203,6 +208,7 @@ class InfluencerControllerTest {
                         }
                         """));
 
+        // Verify interactions with the mock repository
         verify(mockInfluencerRepo, times(1)).findById(anyString());
         verify(mockInfluencerRepo, times(1)).save(any(Influencer.class));
     }
