@@ -17,7 +17,7 @@ export async function GET(path: string, cache?: RequestCache, headers?: HeadersI
 
   const response = await fetch(`${API}/${sanitizedPath}`, {
     method: 'GET',
-    cache: cache || 'force-cache',
+    cache: cache ?? 'force-cache',
     headers: {
       ...headers,
     },
