@@ -5,7 +5,7 @@ import { CardFooter } from '@/components/ui/card';
 import { approveTweet, retryImageGeneration } from '@/actions';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function ApprovalActions({ id }: { id: string }) {
+export default function ApprovalActions({ id }: { readonly id: string }) {
   const { toast } = useToast();
 
   const approveHandler = () => {
