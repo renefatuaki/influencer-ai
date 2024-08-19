@@ -5,8 +5,9 @@ import { ActivityProps } from '@/types';
 import Image from 'next/image';
 import icon from '@/assets/icons/x.svg';
 
-export default function Activity({ text, link, createdAt }: ActivityProps) {
+export default function Activity({ text, link, createdAt }: Readonly<ActivityProps>) {
   const dateTime = new Date(createdAt);
+
   return (
     <Card className="grid lg:col-span-2 p-4 gap-2">
       <CardTitle className="grid grid-cols-2 gap-2">
