@@ -1,5 +1,6 @@
 package dev.elfa.backend.util;
 
+import dev.elfa.backend.exception.OAuth1HeaderBuilderException;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.crypto.Mac;
@@ -106,7 +107,7 @@ public class OAuth1HeaderBuilder {
             byte[] result = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(result);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new OAuth1HeaderBuilderException("Error generating OAuth signature", e.getCause());
         }
     }
 
@@ -146,7 +147,7 @@ public class OAuth1HeaderBuilder {
 
 
     public OAuth1HeaderBuilder withURLQueryParameter(String queryParameters) {
-        if (queryParameters != null || !queryParameters.isEmpty()) {
+        if (queryParameters != null && !queryParameters.isEmpty()) {
             String[] kvp = queryParameters.split("=");
             this.queryParametersMap.put(kvp[0], kvp[1]);
         }
