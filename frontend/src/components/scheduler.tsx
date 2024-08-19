@@ -52,7 +52,7 @@ export function Scheduler({ id, time, days }: Readonly<SchedulerProps>) {
 
   const hour = time ? convertHourTo12HourFormat(time.split(':')[0]) : undefined;
   const minute = time ? time.split(':')[1] : undefined;
-  const meridiem = time ? (parseInt(hour!, 10) > 12 ? 'PM' : 'AM') : undefined;
+  const meridiem = time && parseInt(hour!, 10) > 12 ? 'PM' : 'AM';
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
