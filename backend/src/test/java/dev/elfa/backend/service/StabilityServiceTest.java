@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ class StabilityServiceTest {
     }
 
     @Test
-    void createImage_ValidId_ReturnsImage() {
+    void createImage_ValidId_ReturnsImage() throws IOException {
         byte[] image = new byte[]{1, 2, 3};
 
         try (Buffer buffer = new Buffer().write(image)) {
@@ -58,10 +60,10 @@ class StabilityServiceTest {
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(influencer));
 
-        Optional<byte[]> result = stabilityService.createImage("1000");
+        Optional<Resource> result = stabilityService.createImage("1000");
 
         assertTrue(result.isPresent());
-        assertArrayEquals(image, result.get());
+        assertArrayEquals(image, result.get().getContentAsByteArray());
     }
 
     @Test

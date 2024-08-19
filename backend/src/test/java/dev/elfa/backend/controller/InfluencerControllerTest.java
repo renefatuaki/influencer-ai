@@ -54,17 +54,13 @@ class InfluencerControllerTest {
     @DynamicPropertySource
     static void backendProperties(DynamicPropertyRegistry registry) {
         registry.add("X_URL", () -> mockWebServer.url("/").toString());
-        registry.add("X_CLIENT_ID", () -> "mockClientId");
-        registry.add("X_CLIENT_PW", () -> "mockClientPw");
-        registry.add("X_REDIRECT_URI", () -> "mockRedirectUri");
-        registry.add("spring.data.mongodb.uri", () -> "mongodb://localhost:27017/testDatabase");
     }
 
     @Test
     void getInfluencer_ValidId_ReturnsOkStatus() throws Exception {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1010", twitter, null, null, null)));
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1010", twitter, null, null, null, null)));
 
         mvc.perform(MockMvcRequestBuilders.get("/api/influencer/1000"))
                 .andExpect(MockMvcResultMatchers.content().json("""
@@ -97,11 +93,11 @@ class InfluencerControllerTest {
 
         Auth auth1 = new Auth(true, "token", "secret", LocalDateTime.now());
         Twitter twitter1 = new Twitter("1", "name1", "username1", auth1);
-        Influencer influencer1 = new Influencer("1", twitter1, null, null, null);
+        Influencer influencer1 = new Influencer("1", twitter1, null, null, null, null);
 
         Auth auth2 = new Auth(true, "token", "secret", LocalDateTime.now());
         Twitter twitter2 = new Twitter("2", "name2", "username2", auth2);
-        Influencer influencer2 = new Influencer("2", twitter2, null, null, null);
+        Influencer influencer2 = new Influencer("2", twitter2, null, null, null, null);
 
         List<Influencer> influencerList = Arrays.asList(influencer1, influencer2);
         Page<Influencer> influencerPage = new PageImpl<>(influencerList, pageable, influencerList.size());
@@ -187,7 +183,7 @@ class InfluencerControllerTest {
     void updateInfluencerPersonality_ValidRequest_ReturnsAcceptedStatus() throws Exception {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null, null)));
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null, null, null)));
 
         when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
 
@@ -232,7 +228,7 @@ class InfluencerControllerTest {
     void updateInfluencerAppearance_ValidRequest_ReturnsAcceptedStatus() throws Exception {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null, null)));
+        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1", twitter, null, null, null, null)));
 
         when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
 

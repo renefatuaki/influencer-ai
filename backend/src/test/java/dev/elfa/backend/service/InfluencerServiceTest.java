@@ -33,14 +33,14 @@ class InfluencerServiceTest {
         LocalDateTime currentDateTime = LocalDateTime.now();
         Auth auth = new Auth(true, "token", "secret", currentDateTime);
         Twitter twitter = new Twitter("1", "name", "username", auth);
-        Influencer influencer = new Influencer("1", twitter, null, null, null);
+        Influencer influencer = new Influencer("1", twitter, null, null, null, null);
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.of(influencer));
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
 
         AuthDto authDto = new AuthDto(true);
         TwitterDto twitterDto = new TwitterDto("1", "name", "username", authDto);
-        InfluencerDto influencerDto = new InfluencerDto("1", twitterDto, null, null);
+        InfluencerDto influencerDto = new InfluencerDto("1", twitterDto, null, null, null);
 
         Optional<InfluencerDto> actualResponseDto = influencerService.getInfluencerDto("1");
         verify(mockInfluencerRepo, times(1)).findById("1");
@@ -89,11 +89,11 @@ class InfluencerServiceTest {
     private static @NotNull Page<Influencer> getInfluencersPageData() {
         Auth auth1 = new Auth(true, "token", "secret", LocalDateTime.now());
         Twitter twitter1 = new Twitter("1", "name", "username", auth1);
-        Influencer influencer1 = new Influencer("1", twitter1, null, null, null);
+        Influencer influencer1 = new Influencer("1", twitter1, null, null, null, null);
 
         Auth auth2 = new Auth(true, "token", "secret", LocalDateTime.now());
         Twitter twitter2 = new Twitter("1", "name", "username", auth2);
-        Influencer influencer2 = new Influencer("1", twitter2, null, null, null);
+        Influencer influencer2 = new Influencer("1", twitter2, null, null, null, null);
 
         return new PageImpl<>(Arrays.asList(influencer1, influencer2));
     }
@@ -102,11 +102,11 @@ class InfluencerServiceTest {
     private static @NotNull Page<InfluencerDto> getInfluencersDtoPageData() {
         AuthDto authDto1 = new AuthDto(true);
         TwitterDto twitterDto1 = new TwitterDto("1", "name", "username", authDto1);
-        InfluencerDto influencerDto1 = new InfluencerDto("1", twitterDto1, null, null);
+        InfluencerDto influencerDto1 = new InfluencerDto("1", twitterDto1, null, null, null);
 
         AuthDto authDto2 = new AuthDto(true);
         TwitterDto twitterDto2 = new TwitterDto("1", "name", "username", authDto2);
-        InfluencerDto influencerDto2 = new InfluencerDto("1", twitterDto2, null, null);
+        InfluencerDto influencerDto2 = new InfluencerDto("1", twitterDto2, null, null, null);
 
         return new PageImpl<>(Arrays.asList(influencerDto1, influencerDto2));
     }
@@ -129,7 +129,7 @@ class InfluencerServiceTest {
         LocalDateTime currentDateTime = LocalDateTime.now();
         Auth auth = new Auth(true, "token", "secret", currentDateTime);
         Twitter twitter = new Twitter("1", "name", "username", auth);
-        Influencer influencer = new Influencer("1", twitter, null, null, null);
+        Influencer influencer = new Influencer("1", twitter, null, null, null, null);
         when(mockInfluencerRepo.findById("1")).thenReturn(Optional.of(influencer));
 
         InfluencerService influencerService = new InfluencerService(mockInfluencerRepo);
@@ -166,7 +166,7 @@ class InfluencerServiceTest {
         Auth auth = new Auth(true, "mockAccessToken", "mockRefreshToken", LocalDateTime.now().plusHours(1));
         Twitter twitter = new Twitter("2020", "name", "username", auth);
         Personality personalityToUpdate = new Personality(Set.of(Tone.FRIENDLY), Set.of(Interest.CULTURE, Interest.ART));
-        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null, null));
+        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null, null, null));
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(influencerOptional);
         when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
@@ -207,7 +207,7 @@ class InfluencerServiceTest {
                 SkinTone.LIGHT,
                 Style.BUSINESS
         );
-        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null, null));
+        Optional<Influencer> influencerOptional = Optional.of(new Influencer("1", twitter, null, null, null, null));
 
         when(mockInfluencerRepo.findById(anyString())).thenReturn(influencerOptional);
         when(mockInfluencerRepo.save(any(Influencer.class))).thenReturn(null);
