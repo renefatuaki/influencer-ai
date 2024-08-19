@@ -23,9 +23,7 @@ export default function BaseImage({ twitterId }: Readonly<{ twitterId: string }>
     <Card className="p-4">
       <CardContent className="relative min-h-96 flex justify-center items-center">
         {isLoading ? (
-          <>
-            <Loading />
-          </>
+          <Loading />
         ) : (
           <>
             <Image className="rounded-md object-cover" src={image} alt="Influencer Image" fill={true} />
