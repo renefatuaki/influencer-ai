@@ -8,7 +8,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { POST } from '@/lib/fetch';
 import AlertResponse from '@/components/alert-response';
 
-export default function TwitterAuth({ url }: { url: string }) {
+export default function TwitterAuth({ url }: { readonly url: string }) {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const state = searchParams.get('state');
