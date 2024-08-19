@@ -1,10 +1,10 @@
 import { useFormState } from 'react-dom';
-import { createTwitterTextPost } from '@/actions';
+import { tweetImage } from '@/actions';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubmitButton } from '@/components/submit-button';
 
 export default function TweetImage({ twitterId }: Readonly<{ twitterId: string }>) {
-  const [state, formAction] = useFormState(createTwitterTextPost, {
+  const [state, formAction] = useFormState(tweetImage, {
     error: false,
     message: '',
   });
