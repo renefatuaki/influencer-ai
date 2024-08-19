@@ -85,14 +85,14 @@ export function Scheduler({ id, time, days }: Readonly<SchedulerProps>) {
     <Card>
       <CardHeader>
         <CardTitle>Scheduler</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
         <CardDescription>
           Schedule the exact times at which image posts should be published on your influencer's Twitter account. This allows for precise control over the
           timing of content delivery, ensuring maximum engagement and visibility.
         </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8 py-1">
             <div className="grid md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
