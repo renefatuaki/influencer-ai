@@ -10,7 +10,7 @@ type ToggleListProps<T extends object> = {
   data: string[];
 };
 
-export default function ToggleList<T extends object>({ className, id, label, enums, data }: ToggleListProps<T>) {
+export default function ToggleList<T extends object>({ className, id, label, enums, data }: Readonly<ToggleListProps<T>>) {
   const options: string[] = Object.keys(enums);
   const [selectedOptions, setSelectedOptions] = useState<string[]>(data);
 
