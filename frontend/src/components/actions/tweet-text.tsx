@@ -1,11 +1,11 @@
 import { SubmitButton } from '@/components/submit-button';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { useFormState } from 'react-dom';
 import { createTwitterTextPost } from '@/actions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-export default function TextGeneration({ twitterId }: Readonly<{ twitterId: string }>) {
+export default function TweetText({ twitterId }: Readonly<{ twitterId: string }>) {
   const [state, formAction] = useFormState(createTwitterTextPost, {
     error: false,
     message: '',
@@ -17,17 +17,17 @@ export default function TextGeneration({ twitterId }: Readonly<{ twitterId: stri
       <Card>
         <CardHeader>
           <CardTitle>Tweet Text</CardTitle>
-          <CardDescription>Create AI-generated tweets to enhance your influencer's online presence and interaction.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-2">
-          <div>
-            <form action={formAction}>
-              <input type="hidden" name="id" value={twitterId} readOnly={true} />
-              <SubmitButton state={state} isLoading={true}>
-                Create Tweet
-              </SubmitButton>
-            </form>
-          </div>
+        <CardContent className="grid">
+          <CardDescription>Create AI-generated tweets to enhance your influencer's online presence and interaction.</CardDescription>
+        </CardContent>
+        <CardFooter className="grid">
+          <form action={formAction}>
+            <input type="hidden" name="id" value={twitterId} readOnly={true} />
+            <SubmitButton state={state} isLoading={true}>
+              Create Tweet
+            </SubmitButton>
+          </form>
           {state.link && (
             <div className="flex justify-end">
               <Link href={state.link} target="_blank">
@@ -37,7 +37,7 @@ export default function TextGeneration({ twitterId }: Readonly<{ twitterId: stri
               </Link>
             </div>
           )}
-        </CardContent>
+        </CardFooter>
       </Card>
     </>
   );
