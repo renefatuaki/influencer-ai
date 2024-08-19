@@ -106,7 +106,9 @@ public class TwitterService {
         return auth.getExpiresAt().isBefore(LocalDateTime.now());
     }
 
-    private void refreshAuthToken(Auth auth) {
+    private void refreshAuthToken(Influencer influencer) {
+        Auth auth = influencer.getTwitter().auth();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(clientId, clientPassword);
 
@@ -128,6 +130,8 @@ public class TwitterService {
             auth.setAccessToken(entityBody.access_token());
             auth.setRefreshToken(entityBody.refresh_token());
             auth.setExpiresAt(LocalDateTime.now().plusSeconds(entityBody.expires_in()));
+
+            influencerRepo.save(influencer);
         }
     }
 
@@ -154,7 +158,7 @@ public class TwitterService {
     public Optional<Influencer> updateAccount(Influencer influencer) {
         Auth auth = influencer.getTwitter().auth();
 
-        if (isTokenExpired(auth)) refreshAuthToken(auth);
+        if (isTokenExpired(auth)) refreshAuthToken(influencer);
 
         return this.getAccountData(auth.getAccessToken()).map(accountData -> {
             Twitter updatedTwitter = new Twitter(accountData.id(), accountData.name(), accountData.username(), auth);
@@ -169,7 +173,7 @@ public class TwitterService {
         String tweetText = ollamaService.createTweet(influencer.getPersonality());
         Auth auth = influencer.getTwitter().auth();
 
-        if (isTokenExpired(auth)) refreshAuthToken(auth);
+        if (isTokenExpired(auth)) refreshAuthToken(influencer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(auth.getAccessToken());
@@ -258,7 +262,7 @@ public class TwitterService {
         Influencer influencer = optionalInfluencer.get();
         Auth auth = influencer.getTwitter().auth();
 
-        if (isTokenExpired(auth)) refreshAuthToken(auth);
+        if (isTokenExpired(auth)) refreshAuthToken(influencer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(auth.getAccessToken());
