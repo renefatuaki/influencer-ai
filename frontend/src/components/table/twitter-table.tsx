@@ -13,7 +13,7 @@ interface DataTableProps<TValue> {
   columns: ColumnDef<TableData, TValue>[];
 }
 
-export function TwitterTable<TValue>({ columns }: DataTableProps<TValue>) {
+export function TwitterTable<TValue>({ columns }: Readonly<DataTableProps<TValue>>) {
   const [tableData, setTableData] = useState<TableData[]>([]);
   const [paginationData, setPaginationData] = useState<PaginationType>();
   const [pagination, setPagination] = useState({
@@ -63,9 +63,7 @@ export function TwitterTable<TValue>({ columns }: DataTableProps<TValue>) {
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
+                        <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
                       );
                     })}
                   </TableRow>
