@@ -79,7 +79,7 @@ export async function updateAppearance(prevState: any, formData: FormData) {
   return { error: false, message: 'Appearance updated successfully. Next update the base image.' };
 }
 
-export async function createTwitterTextPost(prevState: any, formData: FormData) {
+export async function tweetText(prevState: any, formData: FormData) {
   const id = formData.get('id');
   const response = await POST(`/twitter/tweet/${id}`, {});
 
@@ -90,6 +90,19 @@ export async function createTwitterTextPost(prevState: any, formData: FormData) 
   const { text, link } = response;
 
   return { error: false, message: `Twitter text post created successfully! Twitter post: ${text}`, link: link };
+}
+
+export async function tweetImage(prevState: any, formData: FormData) {
+  const id = formData.get('id');
+  const response = await POST(`/twitter/tweet/${id}/image`, {});
+
+  if (response.status >= 300) {
+    return { error: true, message: 'There was an issue generating the tweet and image. Please try again later.' };
+  }
+
+  const { text, link } = response;
+
+  return { error: false, message: `Tweet with image created successfully! Post is waiting for approval.` };
 }
 
 export async function updateTwitterBaseImage(id: string) {
