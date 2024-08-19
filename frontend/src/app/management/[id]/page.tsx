@@ -22,10 +22,11 @@ import Editor from '@/components/editor/editor';
 import { updateAppearance, updatePersonality } from '@/actions';
 import ToggleList from '@/components/editor/toggle-list';
 import SelectInput from '@/components/editor/select-input';
-import Actions from '@/components/actions';
 import TwitterDetails from '@/components/twitter';
 import BaseImage from '@/components/base-image';
 import { Scheduler } from '@/components/scheduler';
+import TweetText from '@/components/actions/tweet-text';
+import TweetImage from '@/components/actions/tweet-image';
 
 type ParamsProps = {
   params: {
@@ -60,7 +61,10 @@ export default function InfluencerSettings({ params }: Readonly<ParamsProps>) {
           <TwitterDetails data={influencer.twitter} />
         </div>
         <div className="col-span-12 lg:col-span-4">
-          <Actions twitterId={id} />
+          <TweetText twitterId={id} />
+        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <TweetImage twitterId={id} />
         </div>
         <div className="col-span-12 lg:col-span-4">
           <Scheduler id={id} time={influencer.scheduler.scheduledTime} days={influencer.scheduler.scheduledDays} />
