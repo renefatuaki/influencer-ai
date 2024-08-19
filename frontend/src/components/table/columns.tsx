@@ -48,7 +48,7 @@ export const columns: ColumnDef<TableData>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
-      const { id, twitterUsername } = row.original;
+      const { id } = row.original;
 
       return (
         <DropdownMenu>
