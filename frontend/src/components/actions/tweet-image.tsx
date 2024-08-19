@@ -1,9 +1,9 @@
 import { useFormState } from 'react-dom';
 import { createTwitterTextPost } from '@/actions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { SubmitButton } from '@/components/submit-button';
 
-export default function ImageGeneration({ twitterId }: Readonly<{ twitterId: string }>) {
+export default function TweetImage({ twitterId }: Readonly<{ twitterId: string }>) {
   const [state, formAction] = useFormState(createTwitterTextPost, {
     error: false,
     message: '',
@@ -12,19 +12,19 @@ export default function ImageGeneration({ twitterId }: Readonly<{ twitterId: str
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Actions</CardTitle>
-        <CardDescription>
-          Utilize AI to generate engaging text or images for your influencer's Twitter posts, enhancing their online presence and interaction.
-        </CardDescription>
+        <CardTitle>Tweet Image</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2">
+      <CardContent className="grid">
+        <CardDescription>Create AI-generated tweets with images. Approval required before posting. Find the tweet under the approval section.</CardDescription>
+      </CardContent>
+      <CardFooter className="grid">
         <form action={formAction}>
           <input type="hidden" name="id" value={twitterId} readOnly={true} />
           <SubmitButton state={state} isLoading={true}>
             Generate Tweet with Image
           </SubmitButton>
         </form>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }
