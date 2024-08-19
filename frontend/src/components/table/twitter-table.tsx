@@ -15,6 +15,7 @@ interface DataTableProps<TValue> {
 
 export function TwitterTable<TValue>({ columns }: Readonly<DataTableProps<TValue>>) {
   const [tableData, setTableData] = useState<TableData[]>([]);
+  const [loading, setLoading] = useState(true);
   const [paginationData, setPaginationData] = useState<PaginationType>();
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -37,6 +38,7 @@ export function TwitterTable<TValue>({ columns }: Readonly<DataTableProps<TValue
 
       setPaginationData(pagination);
       setTableData(table);
+      setLoading(false);
     });
   }, [pagination, sorting]);
 
@@ -54,7 +56,7 @@ export function TwitterTable<TValue>({ columns }: Readonly<DataTableProps<TValue
 
   return (
     <div className="flex flex-col gap-4">
-      {tableData.length ? (
+      {!loading ? (
         <>
           <div className="rounded-md border">
             <Table>
@@ -92,7 +94,7 @@ export function TwitterTable<TValue>({ columns }: Readonly<DataTableProps<TValue
         </>
       ) : (
         <>
-          <Skeleton className="h-48" />
+          <Skeleton className="h-32" />
           <Skeleton className="h-8" />
         </>
       )}
