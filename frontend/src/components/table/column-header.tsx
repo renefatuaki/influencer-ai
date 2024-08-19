@@ -3,23 +3,24 @@ import { Column } from '@tanstack/react-table';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
 }
 
-export function ColumnHeader<TData, TValue>({ column, title, className }: DataTableColumnHeaderProps<TData, TValue>) {
+export function ColumnHeader<TData, TValue>({ column, title, className }: Readonly<DataTableColumnHeaderProps<TData, TValue>>) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }
+
+  const SortIcon = () => {
+    const isSorted = column.getIsSorted();
+    if (isSorted === 'desc') return <ArrowDownIcon className="ml-2 h-4 w-4" />;
+    if (isSorted === 'asc') return <ArrowUpIcon className="ml-2 h-4 w-4" />;
+    return <CaretSortIcon className="ml-2 h-4 w-4" />;
+  };
 
   return (
     <div className={cn('flex items-center space-x-2', className)}>
@@ -27,13 +28,7 @@ export function ColumnHeader<TData, TValue>({ column, title, className }: DataTa
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
             <span>{title}</span>
-            {column.getIsSorted() === 'desc' ? (
-              <ArrowDownIcon className="ml-2 h-4 w-4" />
-            ) : column.getIsSorted() === 'asc' ? (
-              <ArrowUpIcon className="ml-2 h-4 w-4" />
-            ) : (
-              <CaretSortIcon className="ml-2 h-4 w-4" />
-            )}
+            <SortIcon />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
