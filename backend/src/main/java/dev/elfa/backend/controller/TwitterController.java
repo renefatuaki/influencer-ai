@@ -78,7 +78,7 @@ public class TwitterController {
     }
 
     @PostMapping("/tweet/{id}/image")
-    public ResponseEntity<String> tweetImage(@PathVariable String id) throws IOException {
+    public ResponseEntity<Void> tweetImage(@PathVariable String id) throws IOException {
         Optional<Influencer> influencerOptional = influencerService.getInfluencer(id);
         if (influencerOptional.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
@@ -92,7 +92,7 @@ public class TwitterController {
         FileMetadata fileMetadata = gridFsService.saveImage(image, influencer.getId());
         twitterService.saveDraftTweet(tweetText, fileMetadata.getId(), influencer.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Tweet with image was successfully created and waiting for approval.");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/tweets")
