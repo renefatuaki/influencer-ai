@@ -20,12 +20,12 @@ const FormSchema = z.object({
     .string({
       required_error: 'Please select an hour.',
     })
-    .regex(/^(0?[1-9]|1[0-2])$/, 'Invalid hour format. Please select a valid hour between 1 and 12.'),
+    .regex(/^(0?[0-9]|1[0-2])$/, 'Invalid hour format. Please select a valid hour between 1 and 12.'),
   minute: z
     .string({
       required_error: 'Please select a minute.',
     })
-    .regex(/^(0|15|30|45)$/, 'Invalid minute format. Please select a valid minute (00, 15, 30, 45).'),
+    .regex(/^(00|15|30|45)$/, 'Invalid minute format. Please select a valid minute (00, 15, 30, 45).'),
   meridiem: z
     .string({
       required_error: 'Please select AM or PM.',
