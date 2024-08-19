@@ -185,19 +185,19 @@ class TwitterServiceTest {
         assertEquals("Are you excited for the weekend?", tweetResponse.get().getText());
     }
 
-//    @Test
-//    void getTweets_List_ReturnsListOfTweet() {
-//        LocalDateTime localDateTime = LocalDateTime.now();
-//        Tweet tweet1 = new Tweet("1000", "Hello World", "https://x.com/1000/status/1010", "5050", "abc100", "9999", localDateTime, true);
-//        Tweet tweet2 = new Tweet("1001", "Hello World", "https://x.com/1001/status/1010", "5050", "abc100", "9999", localDateTime, true);
-//
-//        List<Tweet> expectedTweets = List.of(tweet1, tweet2);
-//        when(mockTweetsRepo.findAll()).thenReturn(expectedTweets);
-//
-//        List<Tweet> tweets = twitterService.getTweets();
-//
-//        assertEquals(expectedTweets, tweets);
-//    }
+    @Test
+    void getTweets_List_ReturnsListOfTweet() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Tweet tweet1 = new Tweet("1000", "Hello World", "https://x.com/1000/status/1010", "5050", "abc100", "9999", localDateTime, true);
+        Tweet tweet2 = new Tweet("1001", "Hello World", "https://x.com/1001/status/1010", "5050", "abc100", "9999", localDateTime, true);
+
+        List<Tweet> expectedTweets = List.of(tweet1, tweet2);
+        when(mockTweetsRepo.findAllByApprovedEquals(true)).thenReturn(expectedTweets);
+
+        List<Tweet> tweets = mockTweetsRepo.findAllByApprovedEquals(true);
+
+        assertEquals(expectedTweets, tweets);
+    }
 
     @Test
     void getTweets_EmptyList_ReturnsEmptyList() {
