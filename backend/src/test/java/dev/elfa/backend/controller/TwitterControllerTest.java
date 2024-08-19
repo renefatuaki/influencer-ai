@@ -192,55 +192,6 @@ class TwitterControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
-//    @Test
-//    void getTweets_ValidRequest_ReturnsOkStatus() throws Exception {
-//        LocalDateTime localDateTime = LocalDateTime.now();
-//        Tweet tweet1 = new Tweet("66be806c65db1967ab1934dc",
-//                " \"Delving deep into the world of abstract expressionism! 🎨 Share your favorite artists or techniques using #ArtTalk #AbstractExpressionism. Let's explore, learn, and create together! 🌈💫\"",
-//                "https://x.com/1816060622804787200/status/1825163645820493885",
-//                "1825163645820493885",
-//                "66be806c65db1967ab1934d8",
-//                "1816060622804787200",
-//                localDateTime,
-//                true);
-//        Tweet tweet2 = new Tweet("66be806c65db1967ab1934dc",
-//                " \"Delving deep into the world of abstract expressionism! 🎨 Share your favorite artists or techniques using #ArtTalk #AbstractExpressionism. Let's explore, learn, and create together! 🌈💫\"",
-//                "https://x.com/1816060622804787200/status/1825163645820493885",
-//                "1825163645820493885",
-//                "66be806c65db1967ab1934d8",
-//                "1816060622804787200",
-//                localDateTime,
-//                true);
-//        when(mockTweetsRepo.findAllByApprovedEquals(anyBoolean())).thenReturn(List.of(tweet1, tweet2));
-//
-//        mvc.perform(MockMvcRequestBuilders.get("/api/twitter/tweets"))
-//                .andExpect(MockMvcResultMatchers.status().isOk())
-//                .andExpect(MockMvcResultMatchers.content().json(String.format("""
-//                        [
-//                            {
-//                                "id": "66be806c65db1967ab1934dc",
-//                                "text": "Delving deep into the world of abstract expressionism! Let's explore, learn, and create together!",
-//                                "link": "https://x.com/1816060622804787200/status/1825163645820493885",
-//                                "tweetId": "1825163645820493885",
-//                                "imageId": "66be806c65db1967ab1934d8",
-//                                "influencerId": "1816060622804787200",
-//                                "createdAt": "%s",
-//                                "approved": true
-//                            },
-//                            {
-//                                "id": "66be806c65db1967ab1934dc",
-//                                "text": "Delving deep into the world of abstract expressionism! Let's explore, learn, and create together!",
-//                                "link": "https://x.com/1816060622804787200/status/1825163645820493885",
-//                                "tweetId": "1825163645820493885",
-//                                "imageId": "66be806c65db1967ab1934d8",
-//                                "influencerId": "1816060622804787200",
-//                                "createdAt": "%s",
-//                                "approved": true
-//                            }
-//                        ]
-//                        """, tweet1.getCreatedAt().toString(), tweet2.getCreatedAt().toString()), false));
-//    }
-
     @Test
     void getTweets_EmptyList_ReturnsOkStatus() throws Exception {
         when(mockTweetsRepo.findAllByApprovedEquals(anyBoolean())).thenReturn(List.of());
