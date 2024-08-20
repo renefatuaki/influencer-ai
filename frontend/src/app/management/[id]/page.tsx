@@ -70,14 +70,12 @@ export default function InfluencerSettings({ params }: Readonly<ParamsProps>) {
           <Scheduler id={id} time={influencer.scheduler.scheduledTime} days={influencer.scheduler.scheduledDays} />
         </div>
       </div>
-      <div className="grid col-span-12 lg:col-span-8 gap-4">
-        <div>
+      <div className="grid col-span-12 lg:col-span-8 gap-4 lg:row-span-1">
+        <div className="flex flex-col gap-4">
           <Editor influencerId={id} title="Personality" description={personalityDescription} action={updatePersonality}>
             <ToggleList id="tone" label="Tone" enums={Tone} data={influencer.personality.tone} />
             <ToggleList id="interest" label="Interest" enums={Interest} data={influencer.personality.interest} />
           </Editor>
-        </div>
-        <div>
           <Editor influencerId={id} title="Appearance" description={appearanceDescription} action={updateAppearance}>
             <div className="grid grid-cols-2 gap-2">
               <ToggleList className="col-span-2" id="face-features" label="Face Features" enums={FaceFeatures} data={faceFeatures} />
