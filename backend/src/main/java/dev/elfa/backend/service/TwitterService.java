@@ -214,6 +214,15 @@ public class TwitterService {
         tweetsRepo.save(new Tweet(null, tweetText, null, null, imageId, influencerId, null, false));
     }
 
+    public void updateDraftTweetImage(String tweetId, String imageId) {
+        Optional<Tweet> optionalTweet = tweetsRepo.findById(tweetId);
+        if (optionalTweet.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tweet not found");
+
+        Tweet tweet = optionalTweet.get();
+        tweet.setImageId(imageId);
+        tweetsRepo.save(tweet);
+    }
+
     public Optional<Tweet> getTweet(String id) {
         return tweetsRepo.findById(id);
     }
