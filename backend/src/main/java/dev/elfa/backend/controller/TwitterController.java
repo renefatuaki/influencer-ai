@@ -77,8 +77,8 @@ public class TwitterController {
         }
     }
 
-    @PostMapping("/tweet/{id}/image")
-    public ResponseEntity<Void> tweetImage(@PathVariable String id) throws IOException {
+    @PostMapping("/influencer/{id}/tweet/image")
+    public ResponseEntity<Void> createDraftTweetImage(@PathVariable String id) throws IOException {
         Optional<Influencer> influencerOptional = influencerService.getInfluencer(id);
         if (influencerOptional.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
@@ -93,6 +93,23 @@ public class TwitterController {
         twitterService.saveDraftTweet(tweetText, fileMetadata.getId(), influencer.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/tweets/{id}/image/refresh")
+    public ResponseEntity<Void> refreshDraftTweetImage(@PathVariable String id) throws IOException {
+        Optional<Tweet> optionalTweet = twitterService.getTweet(id);
+        if (optionalTweet.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        Tweet tweet = optionalTweet.get();
+        String promptStabilityAi = StabilityService.getTweetPrompt(tweet.getText());
+        Optional<Resource> optionalImage = stabilityService.createImage(promptStabilityAi);
+        if (optionalImage.isEmpty()) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        Resource image = optionalImage.get();
+        FileMetadata fileMetadata = gridFsService.saveImage(image, tweet.getInfluencerId());
+        twitterService.updateDraftTweetImage(id, fileMetadata.getId());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @GetMapping("/tweets")
