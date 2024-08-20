@@ -47,6 +47,7 @@ ext {
 
 dependencies {
     implementation 'commons-codec:commons-codec:1.17.1'
+    implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.16.1'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -54,6 +55,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.awaitility:awaitility:4.2.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
