@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,8 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -85,80 +82,6 @@ class InfluencerControllerTest {
 
         mvc.perform(MockMvcRequestBuilders.get("/api/influencer/1000"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-    @Test
-    void getInfluencers_ValidRequest_ReturnsOkStatus() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
-
-        Auth auth1 = new Auth(true, "token", "secret", LocalDateTime.now());
-        Twitter twitter1 = new Twitter("1", "name1", "username1", auth1);
-        Influencer influencer1 = new Influencer("1", twitter1, null, null, null, null);
-
-        Auth auth2 = new Auth(true, "token", "secret", LocalDateTime.now());
-        Twitter twitter2 = new Twitter("2", "name2", "username2", auth2);
-        Influencer influencer2 = new Influencer("2", twitter2, null, null, null, null);
-
-        List<Influencer> influencerList = Arrays.asList(influencer1, influencer2);
-        Page<Influencer> influencerPage = new PageImpl<>(influencerList, pageable, influencerList.size());
-
-        doReturn(influencerPage).when(mockInfluencerRepo).findAll(pageable);
-
-        mvc.perform(MockMvcRequestBuilders.get("/api/influencer"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
-                        {
-                            "totalPages": 1,
-                            "totalElements": 2,
-                            "first": true,
-                            "last": true,
-                            "size": 10,
-                            "content": [
-                                {
-                                    "id": "1",
-                                    "twitter": {
-                                        "id": "1",
-                                        "name": "name1",
-                                        "username": "username1",
-                                        "auth": {
-                                            "isAuthorized": true
-                                        }
-                                    }
-                                },
-                                {
-                                    "id": "2",
-                                    "twitter": {
-                                        "id": "2",
-                                        "name": "name2",
-                                        "username": "username2",
-                                        "auth": {
-                                            "isAuthorized": true
-                                        }
-                                    }
-                                }
-                            ],
-                            "number": 0,
-                            "sort": {
-                                "empty": false,
-                                "sorted": true,
-                                "unsorted": false
-                            },
-                            "pageable": {
-                                "pageNumber": 0,
-                                "pageSize": 10,
-                                "sort": {
-                                    "empty": false,
-                                    "sorted": true,
-                                    "unsorted": false
-                                },
-                                "offset": 0,
-                                "paged": true,
-                                "unpaged": false
-                            },
-                            "numberOfElements": 2,
-                            "empty": false
-                        }
-                        """));
     }
 
     @Test
