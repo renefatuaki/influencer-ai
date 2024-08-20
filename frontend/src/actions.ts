@@ -94,13 +94,11 @@ export async function tweetText(prevState: any, formData: FormData) {
 
 export async function tweetImage(prevState: any, formData: FormData) {
   const id = formData.get('id');
-  const response = await POST(`/twitter/tweet/${id}/image`, {});
+  const response = await POST(`/twitter/influencer/${id}/tweet/image`, {});
 
   if (response.status >= 300) {
     return { error: true, message: 'There was an issue generating the tweet and image. Please try again later.' };
   }
-
-  const { text, link } = response;
 
   return { error: false, message: `Tweet with image created successfully! Post is waiting for approval.` };
 }
@@ -133,7 +131,7 @@ export async function getUnapprovedTweet(): Promise<UnapprovedTweet[]> {
 }
 
 export async function retryImageGeneration(id: string) {
-  const response = await PUT(`/twitter/tweet/${id}/retry`, {});
+  const response = await PUT(`/twitter/tweets/${id}/image/refresh`, {});
 
   revalidatePath('/approval', 'page');
 
