@@ -11,7 +11,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,6 @@ public class StabilityService {
     public Optional<Resource> createImage(String prompt) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
-        headers.setAccept(List.of(webp));
         headers.set("Accept", "image/*");
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
