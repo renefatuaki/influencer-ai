@@ -1,32 +1,64 @@
+version: "3.8"
 services:
-  #  server:
-  #    build:
-  #      context: .
-  #    ports:
-  #      - 8080:8080
-  #    env_file:
-  #      - .env
-  #    depends_on:
-  #      database:
-  #        condition: service_healthy
-  #      ollama-pull:
-  #        condition: service_completed_successfully
+  backend:
+    build:
+      context: ./backend
+    expose:
+      - "8080"
+    restart: always
+    depends_on:
+      - ollama
+      - mongo
+    environment:
+      - MONGO_DB_URI=mongodb://mongo:27017/influencerDB
+    env_file:
+      - .env.backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./docker/development/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.pnpm-store
+    depends_on:
+      - backend
+    environment:
+      - API=http://backend:8080/api
+      - API_PORT=8080
+      - NEXT_PUBLIC_API=http://backend:8080/api
+    env_file:
+      - .env.frontend
+  mongo:
+    restart: always
+    image: mongo:7.0
+    volumes:
+      - mongo_data:/data/db
+    expose:
+      - 27017
   ollama-pull:
     image: docker/genai:ollama-pull
     env_file:
-      - .env
+      - .env.ollama
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.3.6
     ports:
       - "11434:11434"
+    tty: true
+    #    restart: always
     volumes:
       - ollama_volume:/root/.ollama
-#    deploy:
-#      resources:
-#        reservations:
-#          devices:
-#            - driver: nvidia
-#      count: all
-#      capabilities: [ gpu ]
+    env_file:
+      - .env.ollama
+  #    deploy:
+  #      resources:
+  #        reservations:
+  #          devices:
+  #            - driver: nvidia
+  #      count: all
+  #      capabilities: [ gpu ]
 volumes:
-  ollama_volume:
+  mongo_data: { }
+  ollama_volume: { }
