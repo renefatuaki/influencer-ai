@@ -43,6 +43,14 @@ public class OllamaService {
                 .call()
                 .content();
 
+        while (response.startsWith("\"")) {
+            response = response.substring(1);
+        }
+
+        if (response.endsWith("\"")) {
+            response = response.substring(0, response.length() - 1);
+        }
+
         return response.length() > 280 ? response.substring(0, 280) : response;
     }
 }
