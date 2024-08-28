@@ -92,6 +92,7 @@ docker-compose up --build
 
 ## 🤝 Feedback and Contributions
 
-[!IMPORTANT] Whether you have feedback on features, have encountered any bugs, or have suggestions for enhancements, I'm eager to hear from you.
+> [!IMPORTANT]
+> Whether you have feedback on features, have encountered any bugs, or have suggestions for enhancements, I'm eager to hear from you.
 
 Please feel free to contribute by submitting an issue.
