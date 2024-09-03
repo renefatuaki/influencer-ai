@@ -14,7 +14,7 @@ import dev.elfa.backend.model.image.Image;
 import dev.elfa.backend.model.personality.Personality;
 import dev.elfa.backend.repository.InfluencerRepo;
 import dev.elfa.backend.repository.TweetsRepo;
-import dev.elfa.backend.util.OAuth1HeaderBuilder;
+import io.github.renefatuaki.OAuth1AuthorizationHeaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -49,17 +49,17 @@ public class TwitterService {
     private final OllamaService ollamaService;
 
     public TwitterService(
-            @Value("${X_URL}") String baseUrl,
-            @Value("${X_CLIENT_ID}") String clientId,
-            @Value("${X_CLIENT_PW}") String clientPassword,
-            @Value("${X_ACCESS_TOKEN}") String accessToken,
-            @Value("${X_ACCESS_TOKEN_SECRET}") String accessTokenSecret,
-            @Value("${X_CONSUMER_KEY}") String consumerKey,
-            @Value("${X_CONSUMER_SECRET}") String consumerSecret,
-            @Value("${X_REDIRECT_URI}") String redirectUri,
-            InfluencerRepo influencerRepo,
-            TweetsRepo tweetsRepo,
-            OllamaService ollamaService
+        @Value("${X_URL}") String baseUrl,
+        @Value("${X_CLIENT_ID}") String clientId,
+        @Value("${X_CLIENT_PW}") String clientPassword,
+        @Value("${X_ACCESS_TOKEN}") String accessToken,
+        @Value("${X_ACCESS_TOKEN_SECRET}") String accessTokenSecret,
+        @Value("${X_CONSUMER_KEY}") String consumerKey,
+        @Value("${X_CONSUMER_SECRET}") String consumerSecret,
+        @Value("${X_REDIRECT_URI}") String redirectUri,
+        InfluencerRepo influencerRepo,
+        TweetsRepo tweetsRepo,
+        OllamaService ollamaService
     ) {
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
         this.clientId = clientId;
@@ -86,12 +86,12 @@ public class TwitterService {
         requestBody.add("code_verifier", "challenge");
 
         ResponseEntity<AuthenticationResponse> response = restClient.post()
-                .uri("/oauth2/token")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(requestBody)
-                .retrieve()
-                .toEntity(AuthenticationResponse.class);
+            .uri("/oauth2/token")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .body(requestBody)
+            .retrieve()
+            .toEntity(AuthenticationResponse.class);
 
         AuthenticationResponse entityBody = response.getBody();
         if (!response.getStatusCode().isError() && entityBody != null) {
@@ -118,12 +118,12 @@ public class TwitterService {
         requestBody.add("client_id", clientId);
 
         ResponseEntity<AuthenticationResponse> response = restClient.post()
-                .uri("/oauth2/token")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(requestBody)
-                .retrieve()
-                .toEntity(AuthenticationResponse.class);
+            .uri("/oauth2/token")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .body(requestBody)
+            .retrieve()
+            .toEntity(AuthenticationResponse.class);
 
         AuthenticationResponse entityBody = response.getBody();
         if (!response.getStatusCode().isError() && entityBody != null) {
@@ -137,10 +137,10 @@ public class TwitterService {
 
     public Optional<TwitterAccountData> getAccountData(String token) {
         TwitterAccountResponse response = restClient.get()
-                .uri("/users/me")
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
-                .retrieve()
-                .body(TwitterAccountResponse.class);
+            .uri("/users/me")
+            .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+            .retrieve()
+            .body(TwitterAccountResponse.class);
 
         return Optional.ofNullable(response).map(TwitterAccountResponse::data);
     }
@@ -179,12 +179,12 @@ public class TwitterService {
         headers.setBearerAuth(auth.getAccessToken());
 
         ResponseEntity<TweetResponse> response = restClient.post()
-                .uri("/tweets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(new TweetRequestBody(tweetText))
-                .retrieve()
-                .toEntity(TweetResponse.class);
+            .uri("/tweets")
+            .contentType(MediaType.APPLICATION_JSON)
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .body(new TweetRequestBody(tweetText))
+            .retrieve()
+            .toEntity(TweetResponse.class);
 
         return Optional.ofNullable(response.getBody()).map(tweet -> {
             String link = String.format("https://x.com/%s/status/%s", influencer.getTwitter().id(), tweet.data().id());
@@ -230,15 +230,15 @@ public class TwitterService {
     public String uploadImage(String influencerId, Resource image) {
         RestClient client = RestClient.builder().baseUrl(MEDIA_URL).build();
 
-        String authorization = new OAuth1HeaderBuilder()
-                .withMethod("POST")
-                .withURL(MEDIA_URL)
-                .withConsumerSecret(consumerSecret)
-                .withTokenSecret(accessTokenSecret)
-                .withParameter("oauth_consumer_key", consumerKey)
-                .withParameter("oauth_token", accessToken)
-                .withURLQueryParameter("additional_owners=" + influencerId)
-                .build();
+        String authorization = new OAuth1AuthorizationHeaderBuilder()
+            .setHttpMethod("POST")
+            .setUrl(MEDIA_URL)
+            .setConsumerSecret(consumerSecret)
+            .setTokenSecret(accessTokenSecret)
+            .addParameter("oauth_consumer_key", consumerKey)
+            .addParameter("oauth_token", accessToken)
+            .addQueryParameter("additional_owners=" + influencerId)
+            .build();
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
         builder.part("media", image);
@@ -248,13 +248,13 @@ public class TwitterService {
         headers.set("Authorization", authorization);
 
         ResponseEntity<TwitterUploadResponse> response = client.post()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("additional_owners", influencerId)
-                        .build())
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(multipartBody)
-                .retrieve()
-                .toEntity(TwitterUploadResponse.class);
+            .uri(uriBuilder -> uriBuilder
+                .queryParam("additional_owners", influencerId)
+                .build())
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .body(multipartBody)
+            .retrieve()
+            .toEntity(TwitterUploadResponse.class);
 
         TwitterUploadResponse twitterUploadResponse = response.getBody();
 
@@ -277,12 +277,12 @@ public class TwitterService {
         headers.setBearerAuth(auth.getAccessToken());
 
         ResponseEntity<TweetResponse> response = restClient.post()
-                .uri("/tweets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(new TweetRequestMediaBody(tweet.getText(), new Media(new String[]{mediaId})))
-                .retrieve()
-                .toEntity(TweetResponse.class);
+            .uri("/tweets")
+            .contentType(MediaType.APPLICATION_JSON)
+            .headers(httpHeaders -> httpHeaders.addAll(headers))
+            .body(new TweetRequestMediaBody(tweet.getText(), new Media(new String[]{mediaId})))
+            .retrieve()
+            .toEntity(TweetResponse.class);
 
         return Optional.ofNullable(response.getBody()).map(updatedTweet -> {
             String link = String.format("https://x.com/%s/status/%s", influencer.getTwitter().id(), updatedTweet.data().id());
