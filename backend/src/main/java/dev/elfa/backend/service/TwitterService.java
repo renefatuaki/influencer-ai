@@ -20,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -155,6 +156,7 @@ public class TwitterService {
         return influencerRepo.save(influencer);
     }
 
+    @Transactional
     public Optional<Influencer> updateAccount(Influencer influencer) {
         Auth auth = influencer.getTwitter().auth();
 
@@ -202,6 +204,7 @@ public class TwitterService {
         return tweetsRepo.findAllByApprovedEquals(false);
     }
 
+    @Transactional
     public void postScheduledTweet() {
         List<Influencer> influencers = influencerRepo.findBySchedulerScheduledTimeBetween(LocalTime.now(), LocalTime.now().plusMinutes(15));
 
@@ -214,6 +217,7 @@ public class TwitterService {
         tweetsRepo.save(new Tweet(null, tweetText, null, null, imageId, influencerId, null, false));
     }
 
+    @Transactional
     public void updateDraftTweetImage(String tweetId, String imageId) {
         Optional<Tweet> optionalTweet = tweetsRepo.findById(tweetId);
         if (optionalTweet.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tweet not found");
@@ -263,6 +267,7 @@ public class TwitterService {
         return twitterUploadResponse.mediaId();
     }
 
+    @Transactional
     public Optional<Tweet> postTweet(Tweet tweet, String mediaId) {
         Optional<Influencer> optionalInfluencer = influencerRepo.findById(tweet.getInfluencerId());
 

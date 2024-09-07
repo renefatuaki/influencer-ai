@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -48,15 +49,15 @@ public class InfluencerService {
     }
 
     public boolean deleteInfluencer(String id) {
-        try {
+        if (influencerRepo.existsById(id)) {
             influencerRepo.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            return false;
+            return true;
         }
-
-        return true;
+        
+        return false;
     }
 
+    @Transactional
     public Optional<Personality> updatePersonality(String id, Personality personality) {
         return influencerRepo.findById(id).map(influencer -> {
             influencer.setPersonality(personality);
@@ -66,6 +67,7 @@ public class InfluencerService {
         });
     }
 
+    @Transactional
     public Optional<Appearance> updateAppearance(String id, Appearance appearance) {
         return influencerRepo.findById(id).map(influencer -> {
             influencer.setAppearance(appearance);
@@ -75,6 +77,7 @@ public class InfluencerService {
         });
     }
 
+    @Transactional
     public void saveBaseImage(FileMetadata fileMetadata) {
         influencerRepo.findById(fileMetadata.getAccountId()).ifPresent(influencer -> {
             Image image = influencer.getImage().withBaseImage(fileMetadata.getId());
@@ -83,6 +86,7 @@ public class InfluencerService {
         });
     }
 
+    @Transactional
     public Optional<Scheduler> updateScheduler(String id, Scheduler scheduler) {
         return influencerRepo.findById(id).map(influencer -> {
             influencer.setScheduler(scheduler);
