@@ -1,14 +1,5 @@
 # Capstone Project - Influencer AI
 
-## Table of Contents
-
-* [About](#-about)
-* [Features](#-features)
-* [API](#-api)
-* [Setup](#-setup)
-* [Usage](#-usage)
-* [Feedback and Contributions](#-feedback-and-contributions)
-
 ## 💡 About
 
 The Influencer AI platform is designed to streamline the creation and management of AI-driven Twitter bot accounts. It enables users to fully customize bot
@@ -16,6 +7,12 @@ personalities, define visual appearances, and set up tweet scheduling. Leveragin
 that are contextually relevant and align with the chosen personas. For visual content, Stability Diffusion is employed to create images tailored to each bot’s
 identity. The platform also includes a comprehensive approval process for images, ensuring that visual content aligns with the accompanying tweets before they
 are posted.
+
+### Click to Watch the App in Action
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=l8tXgr9DJh8" target="_blank">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_Logo_2017.svg/512px-YouTube_Logo_2017.svg.png" alt="YouTube" height="60"/>
+</a>
 
 ## 🎯 Features
 
