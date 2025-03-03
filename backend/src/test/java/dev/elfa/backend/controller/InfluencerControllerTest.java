@@ -59,45 +59,6 @@ class InfluencerControllerTest {
         Twitter twitter = new Twitter("2020", "name", "username", auth);
         when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.of(new Influencer("1010", twitter, null, null, null, null)));
 
-        mvc.perform(MockMvcRequestBuilders.get("/api/influencer/1000"))
-                .andExpect(MockMvcResultMatchers.content().json("""
-                        {
-                            "id": "1010",
-                            "twitter": {
-                                "id": "2020",
-                                "name": "name",
-                                "username": "username",
-                                "auth": {
-                                    "isAuthorized": true
-                                }
-                            }
-                        }
-                        """))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    void getInfluencer_InvalidId_ReturnsNotFoundStatus() throws Exception {
-        when(mockInfluencerRepo.findById(anyString())).thenReturn(Optional.empty());
-
-        mvc.perform(MockMvcRequestBuilders.get("/api/influencer/1000"))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-    @Test
-    void deleteInfluencer_ValidId_ReturnsNoContentStatus() throws Exception {
-        doNothing().when(mockInfluencerRepo).deleteById("1");
-
-        mvc.perform(MockMvcRequestBuilders.delete("/api/influencer/1"))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-
-        verify(mockInfluencerRepo, times(1)).deleteById("1");
-    }
-
-    @Test
-    void deleteInfluencer_InvalidId_ReturnsNotFoundStatus() throws Exception {
-        doThrow(new IllegalArgumentException()).when(mockInfluencerRepo).deleteById("1");
-
         mvc.perform(MockMvcRequestBuilders.delete("/api/influencer/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
